@@ -30,6 +30,7 @@ import Mock from 'mockjs';
 import Cookie from 'js-cookie';
 
 export default {
+  
   data() {
     return {
       title: '登录',
