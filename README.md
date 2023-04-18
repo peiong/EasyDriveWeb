@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # vue-vite
 =======
 # Vue 3 + Vite
@@ -9,3 +10,6 @@ This template should help get you started developing with Vue 3 in Vite. The tem
 
 - [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
 >>>>>>> 049666f (2023/04/19 02:36)
+=======
+# a real vue3 repository
+>>>>>>> 3d025e9 (Create README.md)
