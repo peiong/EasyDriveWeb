@@ -1,5 +1,7 @@
 <template>
     <el-container>
+
+      
       <el-main>
         <div style='text-align: center; font-size: 40px; color: rgb(25,255,255);'>
           <img style='width: 48px; vertical-align: middle;'
@@ -30,7 +32,7 @@ import Mock from 'mockjs';
 import Cookie from 'js-cookie';
 
 export default {
-  
+
   data() {
     return {
       title: '登录',
