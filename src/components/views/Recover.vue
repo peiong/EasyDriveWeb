@@ -3,7 +3,7 @@
     <el-main>
       <h1 class='recover-title'>{{ title }} </h1>
       <el-input v-model="account" placeholder="中国大陆手机号 / 邮箱" clearable />
-      <el-input style="width: 205px;;" class="verify-input" v-model="verify" placeholder="验证码" clearable />
+      <el-input style="width: 215px;;" class="verify-input" v-model="verify" placeholder="验证码" clearable />
 
       <el-button class="verify-button" :disabled='countdown > 0' @click='handleClick'>
         {{ countdown > 0 ? `${countdown}秒后重新获取` : '获取验证码' }}</el-button>
@@ -205,13 +205,13 @@ export default {
 
 .el-input {
   margin-bottom: 8px;
-  height: 40px;
-  width: 340px;
+  height: 45px;
+  width: 350px;
 }
 
 .verify-button {
   width: 130px;
-  height: 40px;
+  height: 45px;
   margin-bottom: 8px;
   margin-left: 5px;
   background-color: #fff;
@@ -222,8 +222,8 @@ export default {
 
 .el-button--primary {
   margin-bottom: 8px;
-  height: 40px;
-  width: 340px;
+  height: 45px;
+  width: 350px;
   color: #f7f4f4;
   background-color: #409eff;
   border-color: #409eff;

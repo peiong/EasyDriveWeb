@@ -1,8 +1,6 @@
 <template>
     <el-container>
       <el-main>
-
-        
         <div style='text-align: center; font-size: 40px; color: rgb(25,255,255);'>
           <img style='width: 48px; vertical-align: middle;'
             src='https://f005.backblazeb2.com/file/img-forWeb/uPic/omo_cloud.png'>
@@ -118,12 +116,12 @@ export default {
 
 .el-input {
   margin-bottom: 8px;
-  height: 40px;
+  height: 45px;
   width: 350px;
 }
 
 .el-button--primary {
-  height: 40px;
+  height: 45px;
   width: 350px;
   color: #f7f4f4;
   background-color: #30cf79;
@@ -135,4 +133,6 @@ a {
   color: #30cf79;
   font-size: 15px;
 }
+
+
 </style>
