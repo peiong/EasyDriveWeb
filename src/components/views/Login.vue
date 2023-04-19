@@ -1,7 +1,7 @@
 <template>
     <el-container>
       <el-main>
-        <div style='text-align: center; font-size: 40px; color: rgb(25,255,255);'>
+        <div style='text-align: center; font-size: 45px; color: rgb(25,255,255);'>
           <img style='width: 48px; vertical-align: middle;'
             src='https://f005.backblazeb2.com/file/img-forWeb/uPic/omo_cloud.png'>
           <div style='display: inline; margin-bottom: 0px;'> <i slot='suffix'> EasyDrive</i></div>
