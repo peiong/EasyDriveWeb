@@ -57,14 +57,14 @@ const login = () => {
       username: form.account,
       password: form.password
     },(message) => {
-      ElMessage.success(message)
       router.push('/main')
+      ElMessage.success(message)
     })
   }
 }
 // const phoneReg = /^1\d{10}$/;
 // const emailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-// const emailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+
 
 </script>
 
