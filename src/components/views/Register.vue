@@ -45,7 +45,8 @@ const form = reactive({
   verify: '',
   username: '',
   password: '',
-  password1: ''
+  password1: '',
+  countdown: 0
 
 })
 
@@ -61,6 +62,17 @@ const handleClick = () => {
   //   })
   // } else {
   //   ElMessage.warning('请填写正确的手机号码或邮箱')
+// if (this.countdown > 0) {
+//                     return;
+//                   }
+//                   this.countdown = 60;
+//                   const timer = setInterval(() => {
+//                     if (this.countdown > 0) {
+//                       this.countdown--;
+//                     } else {
+//                       clearInterval(timer);
+//                     }
+//                   }, 1000);
   } else {
     ElMessage.error('请输入正确的手机号码或邮箱')
   }
@@ -79,218 +91,6 @@ const submit = () => {
     })
   }
 }
-// export default {
-//   data() {
-//     return {
-//       account: '',
-//       username: '',
-//       verify: '',
-//       password: '',
-//       password1: '',
-//       title: '免费注册',
-//       countdown: 0,
-//       checked: false
-//     }
-//   },
-//   methods: {
-//     submit() {
-//       const phoneReg = /^1\d{10}$/;
-//       const passwordReg = /^(?=.*[a-zA-Z])(?=.*[1-9])(?=.*[\W]).{6,}$/;
-//       const emailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-//       const usernameReg = /^[a-zA-Z0-9_-]{4,16}$/;
-
-//       if (!this.account) {
-//         ElMessage({
-//           message: '请输入手机号码或邮箱',
-//           type: 'error',
-//         })
-//       } else if (!this.verify) {
-//         ElMessage({
-//           message: '请输入验证码',
-//           type: 'error',
-//         })
-//       } else if (!this.username) {
-//         ElMessage({
-//           message: '请输入用户名',
-//           type: 'error',
-//         })
-//       } else if (!usernameReg.test(this.username)) {
-//         ElMessage({
-//           message: '用户名限定4到16位（字母，数字，下划线，减号）',
-//           type: 'error',
-//         })
-//       } else if (!this.password || !this.password1) {
-//         ElMessage({
-//           message: '请输入密码',
-//           type: 'error',
-//         })
-//       } else if (this.password !== this.password) {
-//         ElMessage({
-//           message: '密码不一致',
-//           type: 'error',
-//         })
-//       } else if (!passwordReg.test(this.password1)) {
-//         ElMessage({
-//           message: '密码需包含大小写字母数字和特殊符号',
-//           type: 'error',
-//         })
-//       } else if (!this.checked) {
-//         ElMessage({
-//           message: '请同意相关条款和协议',
-//           type: 'error',
-//         })
-//       } else {
-//         if (!phoneReg.test(this.account) && !emailReg.test(this.account)) {
-//           ElMessage({
-//             message: '请输入正确的手机号码或邮箱',
-//             type: 'error',
-//           })
-//         } else {
-//           const emailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-//           var postvalue = {
-//             phone: this.account,
-//             username: this.username,
-//             password: this.password1,
-//           }
-//           if (emailReg.test(this.account)) {
-//             postvalue = {
-//               email: this.account,
-//               username: this.username,
-//               password: this.password1,
-//             }
-//           }
-
-//           this.$axios.get('/checkIfThereIsAUser/' + this.username).then(res => {
-//             if (res.data) {
-//               ElMessage({
-//                 message: '用户名已被占用',
-//                 type: 'error',
-//               })
-
-//             } else {
-//               this.$axios.post('/register/' + this.verify + '/' + this.account, postvalue).then(res => {
-//                 if (res.data) {
-
-//                   this.$router.push('/login')
-//                   ElMessage({
-//                     message: '注册成功，请登录',
-//                     type: 'error',
-//                   })
-
-
-//                 } else if (!res.data) {
-//                   ElMessage({
-//                     message: '验证码错误',
-//                     type: 'error',
-//                   })
-
-//                 } else {
-//                   ElMessage({
-//                     message: '注册失败，请联系管理员',
-//                     type: 'error',
-//                   })
-
-//                 }
-//               })
-//             }
-//           });
-//         }
-//       }
-//     },
-//     onRecover() {
-//       this.$router.push('/recover');
-//     },
-//     onLogin() {
-//       this.$router.push('/Login');
-//     },
-
-//     handleClick() {
-//       const phoneReg = /^1\d{10}$/;
-//       const emailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-//       if (!phoneReg.test(this.account) && !emailReg.test(this.account)) {
-//         ElMessage({
-//           message: '请输入正确的手机号码或邮箱',
-//           type: 'error',
-//         })
-
-//       } else {
-//         var type;
-//         if (phoneReg.test(this.account)) {
-//           type = 'phone'
-//         } else {
-//           type = 'email'
-//         }
-//         this.$axios.get('/check/' + this.account + '/' + type).then(res => {
-//           if (!res.data) {
-//             ElMessage({
-//               message: '账号已注册',
-//               type: 'error',
-//             })
-
-//           } else {
-//             if (type == 'email') {
-//               this.$axios.post('/send-email', {
-//                 account: this.account
-//               }).then(res => {
-//                 if (res.data) {
-//                   ElMessage({
-//                     message: '验证码已发送至邮箱',
-//                     type: 'error',
-//                   })
-
-//                   if (this.countdown > 0) {
-//                     return;
-//                   }
-//                   this.countdown = 60;
-//                   const timer = setInterval(() => {
-//                     if (this.countdown > 0) {
-//                       this.countdown--;
-//                     } else {
-//                       clearInterval(timer);
-//                     }
-//                   }, 1000);
-//                 } else {
-//                   ElMessage({
-//                     message: '发送失败',
-//                     type: 'error',
-//                   })
-
-//                 }
-//               });
-//             } else {
-//               this.$axios.get('/send-message/' + this.account).then(res => {
-//                 if (res.data == '0') {
-//                   ElMessage({
-//                     message: '短信验证码已发送',
-//                     type: 'error',
-//                   })
-
-//                   if (this.countdown > 0) {
-//                     return;
-//                   }
-//                   this.countdown = 60;
-//                   const timer = setInterval(() => {
-//                     if (this.countdown > 0) {
-//                       this.countdown--;
-//                     } else {
-//                       clearInterval(timer);
-//                     }
-//                   }, 1000);
-//                 } else {
-//                   ElMessage({
-//                     message: '发送失败',
-//                     type: 'error',
-//                   })
-
-//                 }
-//               });
-//             }
-//           }
-//         })
-//       }
-//     },
-//   },
-// };
 
 </script>
 
