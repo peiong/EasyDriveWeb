@@ -8,9 +8,19 @@
           <div style='display: inline; margin-bottom: 0px;'> <i slot='suffix'> EasyDrive</i></div>
           <h1 style="margin-bottom: 15px;" class='login-title'>{{ title }} </h1>
         </div>
-        <el-input v-model="account" placeholder="手机号码 / 邮箱" clearable />
-        <el-input v-model="password" type="password" placeholder="密码" show-password clearable />
-        <el-button :plain="true" @click="submit" type="primary"> 登录 </el-button>
+        <el-input :prefix-icon="Search" v-model="form.account" placeholder="手机号码 / 邮箱" clearable >
+          <template #prefix>
+            <el-icon slot="prefix"><User /></el-icon>
+          </template>
+          
+        </el-input>
+        <el-input v-model="form.password" type="password" placeholder="密码" show-password clearable>
+          <template #prefix>
+            <el-icon slot="prefix"><Lock /></el-icon>
+          </template>
+        </el-input>
+
+        <el-button :plain="true" @click="login()" type="primary"> 登录 </el-button>
         <div>
           <router-link :to="`/recover`">忘记密码</router-link>
           <el-divider direction='vertical'></el-divider>
@@ -24,72 +34,38 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import Mock from 'mockjs';
 import Cookie from 'js-cookie';
+import { reactive } from 'vue';
+import { post } from '../net/index.js'
+import {User, Lock} from '@element-plus/icons-vue'
+import router from '../../router/index.js'
 
-export default {
+const title = '登录'
 
-  data() {
-    return {
-      title: '登录',
-      account: '',
-      password: '',
-      refresh: true,
-      showPassword: false,
-    };
-  },
-  methods: {
-    submit() {
-      const phoneReg = /^1\d{10}$/;
-      const emailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+const form = reactive({
+  account: '',
+  password: ''
+})
 
-      if (!this.account) {
-        ElMessage({
-          message: '请输入账号',
-          type: 'error',
-        })
+const login = () => {
+  if (!form.account || !form.password) {
+    ElMessage.warning('请填写用户名和密码')
+  } else {
+    post('/login', {
+      username: form.account,
+      password: form.password
+    },(message) => {
+      ElMessage.success(message)
+      router.push('/main')
+    })
+  }
+}
+// const phoneReg = /^1\d{10}$/;
+// const emailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+// const emailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
 
-      } else if (!this.password) {
-        ElMessage({
-          message: '请输入密码',
-          type: 'error',
-        })
-
-      } else if (!phoneReg.test(this.account) && !emailReg.test(this.account)) {
-        ElMessage({
-          message: '请输入正确的手机号码或邮箱',
-          type: 'error',
-        })
-
-      } else {
-        this.$axios
-          .post(
-            '/login',
-            this.form
-          )
-          .then((res) => {
-            if (res.data == '-1') {
-              ElMessage({
-                message: '账号或密码错误',
-                type: 'error',
-              })
-
-            } else {
-              const token = Mock.Random.guid();
-              Cookie.set('token', token);
-              Cookie.set('username', res.data);
-              this.$router.push('/main');
-              ElMessage({
-                message: '登录成功',
-                type: 'error',
-              })
-            }
-          });
-      }
-    },
-  },
-};
 </script>
 
 <style lang='less' scoped>
@@ -131,5 +107,4 @@ a {
   color: #30cf79;
   font-size: 15px;
 }
-
 </style>

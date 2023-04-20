@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import '../style.css'
 import axios from 'axios'
 
-axios.defaults.baseURL='http://192.168.1.101:8080'
+//axios.defaults.baseURL='http://192.168.1.101:8080'
 
 const router = createRouter(
     {
