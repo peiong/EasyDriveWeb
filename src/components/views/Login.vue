@@ -1,4 +1,5 @@
 <template>
+  <div>
     <el-container>
       <el-main>
         <div style='text-align: center; font-size: 45px; color: rgb(25,255,255);'>
@@ -16,13 +17,11 @@
           <router-link :to="`/register`">立即注册</router-link>
         </div>
         <div>
-        <el-divider> <span style="color: rgb(157,157,157);">为何选择EasyDrive</span> </el-divider>
-      </div>
+          <el-divider> <span style="color: rgb(157,157,157);">为何选择EasyDrive</span> </el-divider>
+        </div>
       </el-main>
-<!--       
-      <el-footer>
-      </el-footer> -->
     </el-container>
+  </div>
 </template>
 
 <script>
@@ -94,7 +93,6 @@ export default {
 </script>
 
 <style lang='less' scoped>
-
 .el-main {
   min-height: 450px;
   max-width: 385px;
@@ -133,6 +131,5 @@ a {
   color: #30cf79;
   font-size: 15px;
 }
-
 
 </style>
