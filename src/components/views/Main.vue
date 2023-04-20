@@ -1,6 +1,7 @@
 <template>
+  <div class="Main-layout">
   <el-container>
-    <el-aside class="mobile" width="190px" style="max-width: 33.5%; min-height: 635px; ">
+    <el-aside class="mobile" width="190px" style="max-width: 33.5%;min-height: 630px;">
       <el-menu :default-active='active' @open='handleOpen' @close='handleClose' text-color='rgb(25,25,25)'>
         <div class='head-photo'>
           <div style='text-align: center; color: rgb(25,255,255);'>
@@ -15,9 +16,9 @@
           <span>{{ item.name }}</span>
         </el-menu-item>
         <div class='bottom-menu'>
-          <el-popover popper-class="elpopper" placement="top" :width="180" trigger="click">
+          <el-popover placement="top" :width="80" trigger="click">
             <template #reference>
-              <el-avatar :size='size' slot='reference' style='cursor: pointer;'
+              <el-avatar :size='size' slot='reference' style="cursor: pointer; padding: 0;"
                 src='https://f005.backblazeb2.com/file/img-forWeb/uPic/lofi.png'>
               </el-avatar>
             </template>
@@ -31,11 +32,12 @@
         </div>
       </el-menu>
     </el-aside>
-    <el-main>
+    <el-main style="min-height: 630px;">
       <!--文件展示-->
       <router-view @ChangeActive='changactive'></router-view>
     </el-main>
   </el-container>
+</div>
 </template>
 <script>
 
@@ -137,18 +139,8 @@ export default {
   width: 100%;
 }
 
-.popper-class {
-  width: 70px;
-}
-
-.signout {
-  color: #30cf79;
-  border-color: rgb(182, 255, 215);
-  background-color: rgb(182, 255, 215);
-  text-align: center;
-  height: 33px;
-  width: 100px;
-  margin-top: 30px;
+el-popper {
+  padding: 0;
 }
 
 .el-avatar {
@@ -162,11 +154,4 @@ export default {
   color: #30cf79;
 }
 
-@media screen and (max-width: 480px) {
-
-  /* 在屏幕宽度小于480px时，设定最大高度为400px */
-  .mobile {
-    max-height: 500px;
-  }
-}
 </style>
