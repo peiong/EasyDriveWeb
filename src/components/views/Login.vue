@@ -97,7 +97,7 @@ export default {
   min-height: 450px;
   max-width: 385px;
   padding: 0;
-  margin: 0 auto;
+  margin: 110px auto auto;
 }
 
 .el-footer {

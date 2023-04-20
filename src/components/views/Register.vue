@@ -253,7 +253,7 @@ export default {
   height: 500px;
   width: 380px;
   max-width: 380px;
-  margin: 0 auto;
+  margin: 30px auto auto;
   padding: 0px;
 }
 

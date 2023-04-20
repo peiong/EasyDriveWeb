@@ -16,7 +16,7 @@
           <span>{{ item.name }}</span>
         </el-menu-item>
         <div class='bottom-menu'>
-          <el-popover placement="top" :width="80" trigger="click">
+          <el-popover popper-class="user-el-popover" placement="top" trigger="click">
             <template #reference>
               <el-avatar :size='size' slot='reference' style="cursor: pointer; padding: 0;"
                 src='https://f005.backblazeb2.com/file/img-forWeb/uPic/lofi.png'>
@@ -139,15 +139,15 @@ export default {
   width: 100%;
 }
 
-el-popper {
-  padding: 0;
-}
-
 .el-avatar {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+}
+
+.el-popover.user-el-popover {
+  width: 60px;
 }
 
 .el-link.el-link--success {
