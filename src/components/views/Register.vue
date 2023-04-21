@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container @keyup.enter="submit">
     <el-main>
       <h1 class='register-title'>免费注册</h1>
       <el-input v-model="form.account" placeholder="中国大陆手机号 / 邮箱" clearable />
@@ -31,13 +31,9 @@
 <script setup>
 
 import { reactive } from 'vue';
-import { post } from '../net/index.js'
+import { post,passwordReg,phoneReg,emailReg } from '../net/index.js'
 import router from '../../router/index.js'
-import { ElMessage } from 'element-plus'
 import axios from 'axios';
-
-const phoneReg = /^1\d{10}$/
-const emailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
 
 const form = reactive({
   account: '',
@@ -50,38 +46,28 @@ const form = reactive({
 })
 
 const handleClick = () => {
-  if (phoneReg.test(form.account) || emailReg.test(form.account)) {
+  if (!phoneReg.test(form.account) && !emailReg.test(form.account)) {
+    ElMessage.error('请输入正确的手机号码或邮箱')
+  } else {
     axios.post('/sendMessageOrEmail', {
       account: form.account
     })
-  //   post('/sendMessageOrEmail', {
-  //     account: form.account,
-  //   },() => {
-  //     ElMessage.success("message")
-  //   })
-  // } else {
-  //   ElMessage.warning('请填写正确的手机号码或邮箱')
-// if (this.countdown > 0) {
-//                     return;
-//                   }
-//                   this.countdown = 60;
-//                   const timer = setInterval(() => {
-//                     if (this.countdown > 0) {
-//                       this.countdown--;
-//                     } else {
-//                       clearInterval(timer);
-//                     }
-//                   }, 1000);
-  } else {
-    ElMessage.error('请输入正确的手机号码或邮箱')
   }
 }
 
 const submit = () => {
-  if (!form.account || !form.password) {
-    ElMessage.warning('请填写用户名和密码')
+  if (!phoneReg.test(form.account) && !emailReg.test(form.account)) {
+    ElMessage.warning('请输入正确的手机号码或邮箱')
+  } else if (!form.verify) {
+    ElMessage.warning('请输入验证码')
+  } else if (!form.username) {
+    ElMessage.warning('请输入用户名')
+  } else if (!form.password || form.password1) {
+    ElMessage.warning('请输入密码')
+  } else if (passwordReg.text(password)) {
+
   } else {
-    post('/login', {
+    post('/register', {
       username: form.account,
       password: form.password
     },(message) => {

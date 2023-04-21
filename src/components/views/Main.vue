@@ -1,7 +1,7 @@
 <template>
   <div class="Main-layout">
   <el-container>
-    <el-aside class="mobile" width="190px" style="max-width: 33.5%;min-height: 630px;">
+    <el-aside class="mobile" width="190px" style="max-width: 33.5%; min-height: 630px;">
       <el-menu :default-active='active' @open='handleOpen' @close='handleClose' text-color='rgb(25,25,25)'>
         <div class='head-photo'>
           <div style='text-align: center; color: rgb(25,255,255);'>
@@ -34,7 +34,7 @@
     </el-aside>
     <el-main style="min-height: 630px;">
       <!--文件展示-->
-      <router-view @ChangeActive='changactive'></router-view>
+      <router-view @ChangeActive='hangActive'></router-view>
     </el-main>
   </el-container>
 </div>
@@ -74,7 +74,7 @@ export default {
     onClick(path) {
       this.$router.push(path);
     },
-    changactive(item) {
+    changActive(item) {
       this.active = item;
     }
   },

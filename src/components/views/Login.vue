@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <el-container>
+    <el-container @keyup.enter="login">
       <el-main>
         <div style='text-align: center; font-size: 45px; color: rgb(25,255,255);'>
           <img style='width: 48px; vertical-align: middle;'
@@ -31,14 +30,13 @@
         </div>
       </el-main>
     </el-container>
-  </div>
 </template>
 
 <script setup>
 import Mock from 'mockjs';
 import Cookie from 'js-cookie';
 import { reactive } from 'vue';
-import { post } from '../net/index.js'
+import { post,phoneReg,emailReg } from '../net/index.js'
 import {User, Lock} from '@element-plus/icons-vue'
 import router from '../../router/index.js'
 
@@ -51,18 +49,18 @@ const form = reactive({
 const login = () => {
   if (!form.account || !form.password) {
     ElMessage.warning('请填写用户名和密码')
+  } else if (!phoneReg.test(form.account) && !emailReg.test(form.account)) {
+    ElMessage.warning('正确的手机号码或邮箱')
   } else {
     post('/login', {
       username: form.account,
       password: form.password
     },(message) => {
-      router.push('/main')
       ElMessage.success(message)
+      router.push('/main')
     })
   }
 }
-// const phoneReg = /^1\d{10}$/;
-// const emailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
 
 
 </script>
