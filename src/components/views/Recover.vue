@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-main>
-      <h1 class='recover-title'>{{ title }} </h1>
+      <h1 class='recover-title'>找回密码</h1>
       <el-input v-model="account" placeholder="中国大陆手机号 / 邮箱" clearable />
       <el-input style="width: 215px;;" class="verify-input" v-model="verify" placeholder="验证码" clearable />
 
@@ -26,7 +26,6 @@ import { post } from '../net/index.js'
 import router from '../../router/index.js'
 import { get } from 'lodash';
 
-const title = '找回密码'
 
 const form = reactive({
   account: '',

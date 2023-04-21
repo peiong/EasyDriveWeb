@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-main>
-      <h1 class='register-title'>{{ title }} </h1>
+      <h1 class='register-title'>免费注册</h1>
       <el-input v-model="form.account" placeholder="中国大陆手机号 / 邮箱" clearable />
       <el-input style="width: 215px;" class="verify-input" v-model="verify" placeholder="验证码" clearable />
 
@@ -36,7 +36,6 @@ import router from '../../router/index.js'
 import { ElMessage } from 'element-plus'
 import axios from 'axios';
 
-const title = '免费注册'
 const phoneReg = /^1\d{10}$/
 const emailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
 

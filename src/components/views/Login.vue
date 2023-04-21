@@ -6,7 +6,7 @@
           <img style='width: 48px; vertical-align: middle;'
             src='https://f005.backblazeb2.com/file/img-forWeb/uPic/omo_cloud.png'>
           <div style='display: inline; margin-bottom: 0px;'> <i slot='suffix'> EasyDrive</i></div>
-          <h1 style="margin-bottom: 15px;" class='login-title'>{{ title }} </h1>
+          <h1 style="margin-bottom: 15px;" class='login-title'>登录</h1>
         </div>
         <el-input :prefix-icon="Search" v-model="form.account" placeholder="手机号码 / 邮箱" clearable >
           <template #prefix>
@@ -42,7 +42,6 @@ import { post } from '../net/index.js'
 import {User, Lock} from '@element-plus/icons-vue'
 import router from '../../router/index.js'
 
-const title = '登录'
 
 const form = reactive({
   account: '',
