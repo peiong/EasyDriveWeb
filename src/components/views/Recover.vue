@@ -22,13 +22,9 @@
 <script setup>
 
 import { reactive } from 'vue';
-import { post,passwordReg,phoneReg,emailReg } from '../net/index.js'
-import router from '../../router/index.js'
-import { get } from 'lodash';
+import { post,passwordReg,phoneReg,emailReg } from '@/net/index.js'
+import router from '@/router/index.js'
 
-// const phoneReg = /^1\d{10}$/
-// const emailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
-// const passwordReg = /^(?=.*[a-zA-Z])(?=.*[1-9])(?=.*[\W]).{6,}$/;
 
 const form = reactive({
   account: '',

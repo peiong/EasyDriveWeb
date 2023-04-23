@@ -31,8 +31,8 @@
 <script setup>
 
 import { reactive } from 'vue';
-import { post,passwordReg,phoneReg,emailReg } from '../net/index.js'
-import router from '../../router/index.js'
+import { post,passwordReg,phoneReg,emailReg } from '@/net/index.js'
+import router from '@/router/index.js'
 import axios from 'axios';
 
 const form = reactive({
@@ -83,7 +83,6 @@ const submit = () => {
 .el-container {
   max-height: 500px;
 }
-
 .el-main {
   height: 500px;
   width: 380px;
@@ -91,19 +90,16 @@ const submit = () => {
   margin: 30px auto auto;
   padding: 0px;
 }
-
 .register-title {
   font-weight: bolder;
   font-size: 33px;
   color: #30cf79;
 }
-
 .el-input {
   margin-top: 8px;
   height: 45px;
   width: 350px;
 }
-
 .verify-button {
   width: 130px;
   height: 45px;
@@ -114,7 +110,6 @@ const submit = () => {
   color: #30cf79;
 
 }
-
 .el-button--primary {
   margin-top: 8px;
   height: 40px;

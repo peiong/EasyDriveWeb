@@ -4,15 +4,11 @@ import JSEncrypt from "jsencrypt";
 
 const defaultError = () => ElMessage.error('发生了一些错误,请联系管理员')
 const defaultFailure = (message) => ElMessage.error(message)
+
 const phoneReg = /^1\d{10}$/
 const emailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
 const passwordReg = /^(?=.*[a-zA-Z])(?=.*[1-9])(?=.*[\W]).{6,}$/
 
-function encruption(obj) {
-    let encrypt = new JSEncrypt()
-    encrypt.setPublicKey('Re4030dd')
-    return encrypt.encrypt(obj)
-}
 
 function post(url, data, success, failure = defaultFailure, error = defaultError) {
     axios.post(url, data, {
