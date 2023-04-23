@@ -36,9 +36,9 @@
 import Mock from 'mockjs';
 import Cookie from 'js-cookie';
 import { reactive } from 'vue';
-import { post,phoneReg,emailReg } from '@/net/index.js'
+import { post,phoneReg,emailReg } from '@/net'
 import {User, Lock} from '@element-plus/icons-vue'
-import router from '@/router/index.js'
+import router from '@/router'
 
 
 const form = reactive({

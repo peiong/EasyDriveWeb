@@ -22,8 +22,8 @@
 <script setup>
 
 import { reactive } from 'vue';
-import { post,passwordReg,phoneReg,emailReg } from '@/net/index.js'
-import router from '@/router/index.js'
+import { post,passwordReg,phoneReg,emailReg } from '@/net'
+import router from '@/router'
 
 
 const form = reactive({
@@ -55,6 +55,7 @@ const submit = () => {
   } else if (form.password !== form.password1) {
     ElMessage.warning('密码不一致')
   } else {
+    router.push('/login')
     
   }
 }
