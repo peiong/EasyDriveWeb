@@ -26,7 +26,7 @@
             <div style=' margin-top: 7px; text-align: center;'>
               <router-link :to="`/main/preference`">账号详情</router-link>
               <br>
-              <router-link :to="`/login`">退出登录</router-link>
+              <router-link @click="logout">退出登录</router-link>
             </div>
           </el-popover>
         </div>
@@ -40,8 +40,17 @@
 </div>
 </template>
 <script>
-
+import get from '@/net/index.js'
+import { ElMessage } from 'element-plus';
 import Cookie from 'js-cookie';
+import router from '../../router';
+const logout = () => {
+  get('/logout', (message) => {
+    ElMessage.success(message)
+    router.push('/')
+  }) 
+}
+
 
 export default {
   data() {

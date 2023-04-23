@@ -7,8 +7,8 @@ import JsEncrypt from 'jsencrypt'
 import 'element-plus'
 import axios from 'axios'
 
-axios.defaults.baseURL = 'http://localhost:8080'
-
+axios.defaults.baseURL = 'http://localhost:8080'//生产环境
+//axios..defaults.baseURL = 'http://peirong.co:8080'//实际环境
 
 createApp(App).use(router).mount('#app')
 

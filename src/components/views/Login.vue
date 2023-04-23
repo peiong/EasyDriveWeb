@@ -57,7 +57,7 @@ const login = () => {
       password: form.password
     },(message) => {
       ElMessage.success(message)
-      router.push('/main')
+      router.push('/main/file')
     })
   }
 }
