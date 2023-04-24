@@ -1,7 +1,7 @@
 <template>
   <div class="Main-layout">
   <el-container>
-    <el-aside class="mobile" width="190px" style="max-width: 33.5%; min-height: 630px;">
+    <el-aside class="mobile" width="190px" style="min-width: 160px; max-width: 33.5%; min-height: 630px;">
       <el-menu :default-active='active' @open='handleOpen' @close='handleClose' text-color='rgb(25,25,25)'>
         <div class='head-photo'>
           <div style='text-align: center; color: rgb(25,255,255);'>
@@ -13,7 +13,7 @@
 
         <el-menu-item v-for="item in items" :key="item.id" v-model="item.active" @click="onClick(item.router)">
           <img v-bind:src="item.image">
-          <span>{{ item.name }}</span>
+          <span>&nbsp;{{ item.name }}</span>
         </el-menu-item>
         <div class='bottom-menu'>
           <el-popover popper-class="user-el-popover" placement="top" trigger="click">
@@ -57,12 +57,12 @@ export default {
     return {
       title: ' EasyDrive',
       items: [
-        { id: 1, name: ' 全部文件', image: 'https://api.iconify.design/line-md:document.svg', router: '/main/file', },
-        { id: 2, name: ' 正在上传', image: 'https://api.iconify.design/line-md:upload-outline.svg', router: '/main/uploading', },
-        { id: 3, name: ' 正在下载', image: 'https://api.iconify.design/line-md:download-outline.svg', router: '/main/downloading' },
-        { id: 4, name: ' 传输完成', image: 'https://api.iconify.design/line-md:confirm-circle.svg', router: '/main/completed', },
-        { id: 5, name: ' 重复文件', image: 'https://api.iconify.design/material-symbols:explore-outline-rounded.svg', router: '/main/scan', },
-        { id: 6, name: ' 回收站', image: 'https://api.iconify.design/mdi:reload.svg', router: '/main/trash', },
+        { id: 1, name: '全部文件', image: 'https://api.iconify.design/fxemoji:hamburger.svg', router: '/main/file', },
+        { id: 2, name: '正在上传', image: 'https://api.iconify.design/fxemoji:potoffood.svg', router: '/main/uploading', },
+        { id: 3, name: '正在下载', image: 'https://api.iconify.design/fxemoji:doughnut.svg', router: '/main/downloading' },
+        { id: 4, name: '传输完成', image: 'https://api.iconify.design/fxemoji:frenchfries.svg', router: '/main/completed', },
+        { id: 5, name: '重复文件', image: 'https://api.iconify.design/fxemoji:lollipop.svg', router: '/main/scan', },
+        { id: 6, name: '回收站 ', image: 'https://api.iconify.design/fxemoji:friedshrimp.svg', router: '/main/trash', },
       ],
       active: 1,
       size: 50,
@@ -153,10 +153,6 @@ export default {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-}
-
-.el-popover.user-el-popover {
-  width: 60px;
 }
 
 .el-link.el-link--success {

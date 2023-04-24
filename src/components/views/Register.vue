@@ -2,16 +2,48 @@
   <el-container @keyup.enter="register">
     <el-main>
       <h1 class='register-title'>免费注册</h1>
-      <el-input v-model="form.account" placeholder="中国大陆手机号 / 邮箱" clearable />
-      <el-input style="width: 215px;" class="verify-input" v-model="form.verify" placeholder="验证码" clearable />
+      <el-input v-model="form.account" placeholder="中国大陆手机号 / 邮箱" clearable>
+        <template #prefix>
+          <el-icon slot="prefix">
+            <User />
+          </el-icon>
+        </template>
+      </el-input>
+      <el-input style="width: 215px;" class="verify-input" v-model="form.verify" placeholder="验证码" clearable>
+        <template #prefix>
+          <el-icon slot="prefix">
+            <Message />
+          </el-icon>
+        </template>
+      </el-input>
 
-      <el-button class="verify-button" :disabled='countdown > 0' @click='sendCodeToRegister'>
-        {{ countdown > 0 ? `${countdown}秒后重新获取` : '获取验证码' }} </el-button>
+      <el-button v-if="!form.isCounting" class="verify-button" @click="sendCodeToRegister">发送验证码</el-button>
+      <el-button v-else disabled class="verify-button">{{ form.countdown }}秒之后获取</el-button>
 
-      <el-input v-model="form.username" placeholder="用户名（4到16位字母/ 数字 / 下划线/ 减号）" clearable />
-      <el-input v-model="form.password" type="password" placeholder="密码" show-password clearable />
-      <el-input v-model="form.password1" type="password" placeholder="再次输入密码" show-password clearable />
+      <el-input v-model="form.username" placeholder="用户名（4到16位字母/ 数字 / 下划线/ 减号）" clearable>
+        <template #prefix>
+          <el-icon slot="prefix">
+            <Star />
+          </el-icon>
+        </template></el-input>
+
+      <el-input v-model="form.password" type="password" placeholder="密码" show-password clearable>
+        <template #prefix>
+          <el-icon slot="prefix">
+            <Lock />
+          </el-icon>
+        </template>
+      </el-input>
+      <el-input v-model="form.password1" type="password" placeholder="再次输入密码" show-password clearable>
+        <template #prefix>
+          <el-icon slot="prefix">
+            <Lock />
+          </el-icon>
+        </template>
+      </el-input>
+
       <el-button :plain="true" @click="register" type="primary"> 提交 </el-button>
+
       <div style="font-size: 15px;">
         <el-checkbox v-model="checked" size="large"><i style="color: rgb(69, 69, 69);"> 我已阅读并同意遵守 </i>
           <a style="color: rgb(69, 69, 69); text-decoration: underline;" href='https://privacy.peirong.co/contact.html'>
@@ -29,48 +61,49 @@
 </template>
 
 <script setup>
-
 import { reactive } from 'vue';
-import { post, passwordReg, phoneReg, emailReg } from '@/net/index.js'
+import { post, get, passwordReg, phoneReg, emailReg } from '@/net/index.js'
 import router from '@/router/index.js'
 import axios from 'axios';
+import { User, Lock, Star, Message } from '@element-plus/icons-vue'
 
-const countdown = 0
 const form = reactive({
   account: '',
   verify: '',
   username: '',
   password: '',
   password1: '',
+  countdown: 60,
+  isCounting: false
 })
 
 const sendCodeToRegister = () => {
-
-if (!phoneReg.test(form.account) && !emailReg.test(form.account)) {
-  ElMessage.warning('请输入正确的手机号码或邮箱')
-} else {
-  axios.post('/sendMessageOrEmail', {
-    account: form.account
-  }, (response) => {
-    if (response) {
-      ElMessage.success(response)
-      ElMessage.success("验证码已发送,请注意查收")
-      if (countdown > 0) {
-        return;
+  if (!phoneReg.test(form.account) && !emailReg.test(form.account)) {
+    ElMessage.warning('请输入正确的手机号码或邮箱')
+  } else {
+    axios.post('/sendMessageOrEmail', {
+      account: form.account
+    }).then(response => {
+      if (response.data) {
+        ElMessage.success('发送成功')
+        form.countdown = 60;
+        form.isCounting = true;
+        const timer = setInterval(() => {
+          form.countdown--;
+          if (form.countdown === 0) {
+            clearInterval(timer);
+            form.isCounting = false;
+          }
+        }, 1000)
+      } else if (!response.data) {
+        ElMessage.warning('账号已注册')
+      } else {
+        ElMessage.warning('发送失败')
       }
-      countdown = 60;
-      const timer = setInterval(() => {
-        if (countdown > 0) {
-          countdown--;
-        } else {
-          clearInterval(timer);
-        }
-      }, 1000);
-    } else {
-      ElMessage.error("发送失败")
-    }
-  })
-}
+    }).catch(error => {
+      console.log(error)
+    })
+  }
 }
 
 const register = () => {
@@ -96,7 +129,6 @@ const register = () => {
     })
   }
 }
-
 </script>
 
 <style lang='less' scoped>
