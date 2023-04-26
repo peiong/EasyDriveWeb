@@ -16,17 +16,14 @@
           </el-icon>
         </template>
       </el-input>
-
-      <el-button v-if="!form.isCounting" class="verify-button" @click="sendCodeToRegister">发送验证码</el-button>
-      <el-button v-else disabled class="verify-button">{{ form.countdown }}秒之后获取</el-button>
-
+      <el-button v-if="!table.isCounting" class="verify-button" @click="sendCodeToRegister">发送验证码</el-button>
+      <el-button v-else disabled class="verify-button">{{ table.countdown }}秒之后获取</el-button>
       <el-input v-model="form.username" placeholder="用户名（4到16位字母/ 数字 / 下划线/ 减号）" clearable>
         <template #prefix>
           <el-icon slot="prefix">
             <Star />
           </el-icon>
         </template></el-input>
-
       <el-input v-model="form.password" type="password" placeholder="密码" show-password clearable>
         <template #prefix>
           <el-icon slot="prefix">
@@ -41,15 +38,12 @@
           </el-icon>
         </template>
       </el-input>
-
-      <el-button :plain="true" @click="register" type="primary"> 提交 </el-button>
-
+      <el-button :plain="true" @click="register" type="primary">提交</el-button>
       <div style="font-size: 15px;">
-        <el-checkbox v-model="checked" size="large"><i style="color: rgb(69, 69, 69);"> 我已阅读并同意遵守 </i>
-          <a style="color: rgb(69, 69, 69); text-decoration: underline;" href='https://privacy.peirong.co/contact.html'>
-            用户协议</a> <i style="color: rgb(69, 69, 69);">和</i>
-          <a style="color: rgb(69, 69, 69); text-decoration: underline;" href='https://privacy.peirong.co'> 隐私政策</a>
-        </el-checkbox>
+        <input v-model="form.checked" type="checkbox" /><i style="color: rgb(69, 69, 69);"> 我已阅读并同意遵守 </i>
+        <a style="color: rgb(69, 69, 69); text-decoration: underline;" href='https://privacy.peirong.co/contact.html'>
+          用户协议</a> <i style="color: rgb(69, 69, 69);">和&nbsp;</i>
+        <a style="color: rgb(69, 69, 69); text-decoration: underline;" href='https://privacy.peirong.co'> 隐私政策</a>
         <div>
           <router-link :to="`/recover`">忘记密码</router-link>
           <el-divider direction='vertical'></el-divider>
@@ -62,7 +56,7 @@
 
 <script setup>
 import { reactive } from 'vue';
-import { post, get, passwordReg, phoneReg, emailReg } from '@/net/index.js'
+import { post, get, nameReg, passwordReg, phoneReg, emailReg } from '@/net/index.js'
 import router from '@/router/index.js'
 import axios from 'axios';
 import { User, Lock, Star, Message } from '@element-plus/icons-vue'
@@ -73,6 +67,10 @@ const form = reactive({
   username: '',
   password: '',
   password1: '',
+  checked: false
+})
+
+const table = reactive({
   countdown: 60,
   isCounting: false
 })
@@ -86,13 +84,13 @@ const sendCodeToRegister = () => {
     }).then(response => {
       if (response.data) {
         ElMessage.success('发送成功')
-        form.countdown = 60;
-        form.isCounting = true;
+        table.countdown = 60;
+        table.isCounting = true;
         const timer = setInterval(() => {
-          form.countdown--;
-          if (form.countdown === 0) {
+          table.countdown--;
+          if (table.countdown === 0) {
             clearInterval(timer);
-            form.isCounting = false;
+            table.isCounting = false;
           }
         }, 1000)
       } else if (!response.data) {
@@ -115,18 +113,29 @@ const register = () => {
     ElMessage.warning('请输入用户名')
   } else if (!form.password || !form.password1) {
     ElMessage.warning('请输入密码')
-  } else if (passwordReg.text(password)) {
+  } else if (!nameReg.test(form.username)) {
+    ElMessage.warning('用户名限定长度为4-16个只能包含中文、英文、数字、下划线和减号的字符')
+  } else if (!passwordReg.test(form.password)) {
     ElMessage.warning('密码需包含大小写字母数字和特殊符号')
+  } else if (!form.checked) {
+    ElMessage.warning('请同意相关协议和政策')
   } else {
-    axios.post('/register', {
-      account: form.account,
-      verify: form.verify,
-      username: form.username,
-      password: form.password,
-    }, (message) => {
-      router.push('/login')
-      ElMessage.success(message)
-    })
+    axios.get('/checkIfThereIsAUser' + '/' + form.username)
+      .then(response => {
+        if (response.data) {
+          ElMessage.warning('用户名已被占用')
+        } else {
+          axios.post(`/register/${form.verify}/${form.account}`, form)
+            .then(response => {
+              if (response.data) {
+                ElMessage.success('注册成功，请登录')
+                router.push('/login')
+              } else {
+                ElMessage.error('注册失败，请联系管理员')
+              }
+            })
+        }
+      })
   }
 }
 </script>
@@ -138,20 +147,20 @@ const register = () => {
 
 .el-main {
   height: 500px;
-  width: 380px;
-  max-width: 380px;
-  margin: 30px auto auto;
-  padding: 0px;
+  max-width: 385px;
+  padding: 0;
+  margin: 20px auto auto;
 }
 
 .register-title {
   font-weight: bolder;
   font-size: 33px;
+  margin-bottom: 20px;
   color: #30cf79;
 }
 
 .el-input {
-  margin-top: 8px;
+  margin-bottom: 8px;
   height: 45px;
   width: 350px;
 }
@@ -160,7 +169,7 @@ const register = () => {
   width: 130px;
   height: 45px;
   margin-left: 5px;
-  margin-top: 8px;
+  margin-bottom: 8px;
   background-color: rgb(182, 255, 215);
   border: 1px solid rgb(210, 210, 210);
   color: #30cf79;
@@ -168,7 +177,7 @@ const register = () => {
 }
 
 .el-button--primary {
-  margin-top: 8px;
+  margin-bottom: 8px;
   height: 40px;
   width: 350px;
   color: #f7f4f4;

@@ -1,5 +1,5 @@
 <template>
-  <el-container @keyup.enter="submit">
+  <el-container @keyup.enter="recover">
     <el-main>
       <h1 class='recover-title'>找回密码</h1>
       <el-input v-model="form.account" placeholder="中国大陆手机号 / 邮箱" clearable>
@@ -17,8 +17,8 @@
         </template>
       </el-input>
 
-      <el-button v-if="!form.isCounting" class="verify-button" @click="sendCodeToRecover">发送验证码</el-button>
-      <el-button v-else disabled class="verify-button">{{ form.countdown }}秒之后获取</el-button>
+      <el-button v-if="!table.isCounting" class="verify-button" @click="sendCodeToRecover">发送验证码</el-button>
+      <el-button v-else disabled class="verify-button">{{ table.countdown }}秒之后获取</el-button>
 
       <el-input v-model="form.password" type="password" placeholder="密码" show-password clearable>
         <template #prefix>
@@ -34,7 +34,7 @@
           </el-icon>
         </template>
       </el-input>
-      <el-button :plain="true" @click="submit" type="primary"> 提交 </el-button>
+      <el-button :plain="true" @click="recover" type="primary"> 提交 </el-button>
 
       <div style="font-size: 15px;">
         <router-link :to="`/login`">立即登录</router-link>
@@ -51,12 +51,14 @@ import router from '@/router'
 import { User, Lock, Message } from '@element-plus/icons-vue'
 import axios from 'axios';
 
-
 const form = reactive({
   account: '',
   verify: '',
   password: '',
   password1: '',
+})
+
+const table = reactive({
   countdown: 60,
   isCounting: false
 })
@@ -70,27 +72,27 @@ const sendCodeToRecover = () => {
     }).then(response => {
       if (response.data) {
         ElMessage.success('发送成功')
-        form.countdown = 60;
-        form.isCounting = true;
+        table.countdown = 60;
+        table.isCounting = true;
         const timer = setInterval(() => {
-          form.countdown--;
-          if (form.countdown === 0) {
+          table.countdown--;
+          if (table.countdown === 0) {
             clearInterval(timer);
-            form.isCounting = false;
+            table.isCounting = false;
           }
         }, 1000)
-      } else if (response.data) {
+      } else if (!response.data) {
         ElMessage.warning('账号未注册')
       } else {
         ElMessage.warning('发送失败')
       }
     }).catch(error => {
-      console.log(error)
+      ElMessage.error(error)
     })
   }
 }
 
-const submit = () => {
+const recover = () => {
   if (!phoneReg.test(form.account) && !emailReg.test(form.account)) {
     ElMessage.warning('请输入正确的手机号码 / 邮箱')
   } else if (!form.verify) {
@@ -100,24 +102,31 @@ const submit = () => {
   } else if (form.password !== form.password1) {
     ElMessage.warning('密码不一致')
   } else {
-    router.push('/login')
-
+    axios.post('/recover/' + form.verify + '/' + form.account, form)
+      .then(response => {
+        if (response.data) {
+          ElMessage.success('修改成功，请登录')
+          router.push('/login')
+        } else {
+          ElMessage.warning('操作失败，请联系管理员')
+        }
+      })
+      .catch(error => {
+        ElMessage.error(error)
+      })
   }
 }
-
 </script>
 
 <style lang='less' scoped>
 .el-container {
   max-height: 500px;
 }
-
 .el-main {
   height: 500px;
-  width: 380px;
-  max-width: 380px;
-  margin: 70px auto auto;
+  max-width: 385px;
   padding: 0;
+  margin: 20px auto auto;
 }
 
 .recover-title {

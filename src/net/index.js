@@ -8,6 +8,7 @@ const defaultFailure = (message) => ElMessage.error(message)
 const phoneReg = /^1\d{10}$/
 const emailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
 const passwordReg = /^(?=.*[a-zA-Z])(?=.*[1-9])(?=.*[\W]).{6,}$/
+const nameReg = /^[\u4e00-\u9fa5a-zA-Z0-9_-]{4,16}$/
 
 
 function post(url, data, success, failure = defaultFailure, error = defaultError) {
@@ -35,4 +36,4 @@ function get(url, success, failure = defaultFailure, error = defaultError) {
     }).catch(error)
 }
 
-export {get, post, phoneReg,emailReg, passwordReg}
+export {get, post, nameReg, phoneReg, emailReg, passwordReg}
