@@ -10,6 +10,7 @@ import axios from 'axios'
 const app = createApp(App)
 
 axios.defaults.withCredentials = true
+
 axios.defaults.baseURL = 'http://192.168.1.102:8080'          //本地环境
 //axios.defaults.baseURL = 'https://peirong.co:8443/EasyDrive'    //服务器环境
 
