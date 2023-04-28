@@ -2,8 +2,7 @@
   <el-container @keyup.enter="login">
     <el-main>
       <div class="logo">
-        <img style="width: 48px; vertical-align: middle;"
-          src='https://api.iconify.design/icon-park:link-cloud.svg'>
+        <img style="width: 48px; vertical-align: middle;" src='https://api.iconify.design/icon-park:link-cloud.svg'>
         <div style='display: inline;'> <i slot='suffix'> EasyDrive</i></div>
       </div>
       <h1 style="margin-bottom: 15px;" class='login-title'>登录</h1>
@@ -35,17 +34,20 @@
       </el-text>
     </el-main>
     <div style="position: absolute; bottom: 7px; width: 100%; align-items: center;">
-    <a style="color: grey; font-size: 12px;" href="https://beian.miit.gov.cn/"> <i>桂ICP备2022008455号-2</i>
-    </a>
-  </div>
+      <a style="color: grey; font-size: 12px;" href="https://beian.miit.gov.cn/"> <i>桂ICP备2022008455号-2</i>
+      </a>
+    </div>
   </el-container>
 </template>
 
 <script setup>
 import { reactive } from 'vue';
-import { post } from '@/net'
+import { post, get } from '@/net'
 import { User, Lock } from '@element-plus/icons-vue'
 import router from '@/router'
+import { useStore } from '@/stores'
+
+const store = useStore()
 
 const form = reactive({
   account: '',
@@ -60,13 +62,19 @@ const login = () => {
       username: form.account,
       password: form.password
     }, (message) => {
+      localStorage.setItem('username',message)
       ElMessage.success(message)
-      router.push('/main/file')
+      get('/api/user/me', (message) => {
+        store.auth.user = message
+        router.push('/main')
+      }, () => {
+        store.auth.user == null
+      })
     })
   }
 }
-</script>
 
+</script>
 <style lang='less' scoped>
 .logo {
   text-align: center;
@@ -117,4 +125,5 @@ const login = () => {
 a {
   color: #30cf79;
   font-size: 15px;
-}</style>
+}
+</style>

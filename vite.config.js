@@ -5,8 +5,6 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 
-
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     AutoImport({

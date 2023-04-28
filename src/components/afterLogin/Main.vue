@@ -13,9 +13,7 @@
               </div>
             </div>
             <el-menu-item v-for="item in items" :key="item.id" :index="item.router" v-model="item.active"
-              @click="onClick(item.router)" 
-              @mouseenter="onMouseEnter(item)" 
-              @mouseleave="onMouseLeave(item)">
+              @click="onClick(item.router)" @mouseenter="onMouseEnter(item)" @mouseleave="onMouseLeave(item)">
               <img style="width: 25px;" v-bind:src="item.image">
               <span>&nbsp;{{ item.name }}</span>
             </el-menu-item>
@@ -28,7 +26,8 @@
                 </template>
                 <div style='text-align: center; font-size: 18px;'> {{ username }} </div>
                 <div style=' margin-top: 7px; text-align: center; cursor: pointer;'>
-                  <el-button class="preference-button" style="margin-bottom: 8px;" @click="onClick('/main/preference')">账号详情</el-button>
+                  <el-button class="preference-button" style="margin-bottom: 8px;"
+                    @click="onClick('/main/preference')">账号详情</el-button>
                   <br>
                   <el-button @click="logout()" type="danger">退出登录</el-button>
                 </div>
@@ -47,17 +46,20 @@
 <script setup>
 import { get } from '@/net'
 import { ref } from 'vue'
-import router from '@/router';
+import router from '@/router'
+import { useStore } from '@/stores'
+const store = useStore()
 
 
 const logout = () => {
   get('/logout', (message) => {
-    ElMessage.success(message)
-    router.push('/')
+    ElMessage.warning(message)
+    store.auth.user = null
+    router.push('/login')
   })
 }
 
-const username = ref("username")
+const username = ref(localStorage.getItem('username'))
 
 const size = ref(50)
 
@@ -74,35 +76,35 @@ const items = ref([
 
 <script>
 export default {
-    activated() {
-        let activeIndex = this.$route.path;
-        this.$nextTick(() => {
-            this.$refs.menuItems.forEach(item => {
-                if (item.index === activeIndex) {
-                    item.$el.classList.add("is-active");
-                }
-                else {
-                    item.$el.classList.remove("is-active");
-                }
-                if (item.$el.classList.contains("is-hover")) {
-                    item.$el.classList.remove("is-hover");
-                    item.$el.classList.add("el-menu-item--hover");
-                }
-            });
-        });
-    },
-    methods: {
-        onClick(router) {
-            router.push(router);
-        },
-        onMouseEnter(item) {
-            item.$el.classList.add("is-hover");
-        },
-        onMouseLeave(item) {
-            item.$el.classList.remove("is-hover");
+  activated() {
+    let activeIndex = this.$route.path;
+    this.$nextTick(() => {
+      this.$refs.menuItems.forEach(item => {
+        if (item.index === activeIndex) {
+          item.$el.classList.add("is-active");
         }
+        else {
+          item.$el.classList.remove("is-active");
+        }
+        if (item.$el.classList.contains("is-hover")) {
+          item.$el.classList.remove("is-hover");
+          item.$el.classList.add("el-menu-item--hover");
+        }
+      });
+    });
+  },
+  methods: {
+    onClick(path) {
+      router.push(path);
     },
-    components: { Location }
+    onMouseEnter(item) {
+      item.$el.classList.add("is-hover");
+    },
+    onMouseLeave(item) {
+      item.$el.classList.remove("is-hover");
+    }
+  },
+  components: { Location }
 }
 </script>
 
@@ -172,7 +174,8 @@ export default {
   top: 50%;
   transform: translate(-50%, -50%);
 }
-.preference-button{
+
+.preference-button {
   background-color: rgb(182, 255, 215);
   border: 1px solid rgb(210, 210, 210);
   color: #30cf79;

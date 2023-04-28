@@ -67,7 +67,7 @@ const sendCodeToRecover = () => {
   if (!phoneReg.test(form.account) && !emailReg.test(form.account)) {
     ElMessage.warning('请输入正确的手机号码或邮箱')
   } else {
-    axios.post('/sendMessageOrEmail?recover=recover', {
+    axios.post('/before/sendMessageOrEmail?recover=recover', {
       account: form.account
     }).then(response => {
       if (response.data) {
@@ -102,7 +102,7 @@ const recover = () => {
   } else if (form.password !== form.password1) {
     ElMessage.warning('密码不一致')
   } else {
-    axios.post('/recover/' + form.verify + '/' + form.account, form)
+    axios.post('/before/changePasswordToRecover/' + form.verify + '/' + form.account, form)
       .then(response => {
         if (response.data) {
           ElMessage.success('修改成功，请登录')

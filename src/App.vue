@@ -1,3 +1,20 @@
+<script setup>
+import { get } from '@/net'
+import router from '@/router'
+import { useStore } from '@/stores';
+
+const store = useStore()
+
+if (store.auth.store == null) {
+  get('/api/user/me', (message) => {
+    store.auth.user = message
+    router.push('/login')
+  }, () => {
+    store.auth.user == null
+  })
+}
+</script>
+
 <template>
   <router-view/>
 </template>

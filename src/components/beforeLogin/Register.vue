@@ -79,7 +79,7 @@ const sendCodeToRegister = () => {
   if (!phoneReg.test(form.account) && !emailReg.test(form.account)) {
     ElMessage.warning('请输入正确的手机号码或邮箱')
   } else {
-    axios.post('/sendMessageOrEmail', {
+    axios.post('/before/sendMessageOrEmail', {
       account: form.account
     }).then(response => {
       if (response.data) {
@@ -120,7 +120,7 @@ const register = () => {
   } else if (!form.checked) {
     ElMessage.warning('请同意相关协议和政策')
   } else {
-    axios.get('/checkIfThereIsAUser' + '/' + form.username)
+    axios.get('/before/checkIfThereIsAUser' + '/' + form.username)
       .then(response => {
         if (response.data) {
           ElMessage.warning('用户名已被占用')
