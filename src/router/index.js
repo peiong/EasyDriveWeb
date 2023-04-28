@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useStore } from '@/stores'
 import '../style.css'
 
-import main from '@/components/afterLogin/Main.vue';
+import main from '@/components/afterLogin/Main.vue'
 import file from '@/components/afterLogin/FileManagement.vue'
 import uploading from '@/components/afterLogin/UpLoading.vue'
 import downloading from '@/components/afterLogin/Downloading.vue'

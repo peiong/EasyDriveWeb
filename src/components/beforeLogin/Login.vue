@@ -60,15 +60,16 @@ const login = () => {
   } else {
     post('/login', {
       username: form.account,
-      password: form.password
+      password: form.password,
+      remember: true
     }, (message) => {
-      localStorage.setItem('username',message)
+      //localStorage.setItem('username',message)
       ElMessage.success(message)
       get('/api/user/me', (message) => {
         store.auth.user = message
         router.push('/main')
       }, () => {
-        store.auth.user == null
+        store.auth.user = null
       })
     })
   }

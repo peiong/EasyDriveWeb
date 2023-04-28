@@ -48,8 +48,10 @@ import { get } from '@/net'
 import { ref } from 'vue'
 import router from '@/router'
 import { useStore } from '@/stores'
+import { ElMessage } from 'element-plus'
 const store = useStore()
 
+const username = ref(localStorage.getItem('username'))
 
 const logout = () => {
   get('/logout', (message) => {
@@ -58,8 +60,6 @@ const logout = () => {
     router.push('/login')
   })
 }
-
-const username = ref(localStorage.getItem('username'))
 
 const size = ref(50)
 
