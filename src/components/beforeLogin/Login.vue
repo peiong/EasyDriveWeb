@@ -63,10 +63,10 @@ const login = () => {
       password: form.password,
       remember: true
     }, (message) => {
-      //localStorage.setItem('username',message)
       ElMessage.success(message)
       get('/api/user/me', (message) => {
         store.auth.user = message
+        localStorage.setItem('username',message.username)
         router.push('/main')
       }, () => {
         store.auth.user = null

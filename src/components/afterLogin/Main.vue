@@ -57,6 +57,7 @@ const logout = () => {
   get('/logout', (message) => {
     ElMessage.warning(message)
     store.auth.user = null
+    localStorage.removeItem('username')
     router.push('/login')
   })
 }
