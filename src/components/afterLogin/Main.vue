@@ -1,7 +1,7 @@
 <template>
   <div class="Main-layout">
     <el-container>
-      <el-aside class="mobile" width="190px" style="min-width: 160px; max-width: 33.5%; min-height: 630px;">
+      <el-aside class="mobile" width="190px">
         <KeepAlive>
           <el-menu :default-active="$route.path" router text-color='rgb(25,25,25)'>
             <div class='head-photo'>
@@ -26,7 +26,7 @@
                 </template>
                 <div style='text-align: center; font-size: 18px;'> {{ username }} </div>
                 <div style=' margin-top: 7px; text-align: center; cursor: pointer;'>
-                  <el-button class="preference-button" style="margin-bottom: 8px;"
+                  <el-button class="preference-button"
                     @click="onClick('/main/preference')">账号详情</el-button>
                   <br>
                   <el-button @click="logout()" type="danger">退出登录</el-button>
@@ -112,6 +112,13 @@ export default {
 
 
 <style scoped>
+
+.model {
+  min-width: 160px; 
+  max-width: 33.5%; 
+  min-height: 630px;
+}
+
 .head-photo {
   max-width: 200px;
   height: 130px;
@@ -180,6 +187,7 @@ export default {
   background-color: rgb(182, 255, 215);
   border: 1px solid rgb(230, 230, 230);
   color: #30cf79;
+  margin-bottom: 8px;
 }
 
 .preference-button:hover {
