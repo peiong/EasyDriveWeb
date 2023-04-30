@@ -5,7 +5,7 @@ import { useStore } from '@/stores';
 
 const store = useStore()
 
-if (store.auth.store == null) {
+if (store.auth.user == null) {
   get('/api/user/me', (message) => {
     store.auth.user = message
     router.push('/main')
@@ -13,6 +13,7 @@ if (store.auth.store == null) {
     store.auth.user == null
   })
 }
+
 </script>
 
 <template>

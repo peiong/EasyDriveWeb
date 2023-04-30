@@ -30,7 +30,6 @@ export default {
         formatter(row, column) {
             return row.address;
         },
-
         // 上传文件
         uploadFile() {
             this.$router.push({ path: "/upload" });

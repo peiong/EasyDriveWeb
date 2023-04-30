@@ -8,12 +8,15 @@
               <div style='text-align: center; color: black;'>
                 <img style='width: 45px; vertical-align: middle;'
                   src="https://api.iconify.design/icon-park:link-cloud.svg">
-                <div style="display: inline; font-size: 25px; font-weight: bolder;"> <i slot="suffix">&nbsp; EasyDrive</i>
+                <div style="display: inline; font-size: 25px; font-weight: bolder;"> 
+                  <i slot="suffix">&nbsp; EasyDrive</i>
                 </div>
               </div>
             </div>
             <el-menu-item v-for="item in items" :key="item.id" :index="item.router" v-model="item.active"
-              @click="onClick(item.router)" @mouseenter="onMouseEnter(item)" @mouseleave="onMouseLeave(item)">
+              @click="onClick(item.router)" 
+              @mouseenter="onMouseEnter(item)" 
+              @mouseleave="onMouseLeave(item)">
               <img style="width: 25px;" v-bind:src="item.image">
               <span>&nbsp;{{ item.name }}</span>
             </el-menu-item>
@@ -36,8 +39,8 @@
           </el-menu>
         </KeepAlive>
       </el-aside>
-      <el-main style="min-height: 630px;">
-        <router-view @ChangeActive='changActive'></router-view>
+      <el-main>
+        <router-view></router-view>
       </el-main>
     </el-container>
   </div>
@@ -49,10 +52,10 @@ import { ref } from 'vue'
 import router from '@/router'
 import { useStore } from '@/stores'
 import { ElMessage } from 'element-plus'
-const store = useStore()
 
 const username = ref(localStorage.getItem('username'))
 
+const store = useStore()
 const logout = () => {
   get('/logout', (message) => {
     ElMessage.warning(message)
@@ -73,43 +76,34 @@ const items = ref([
   { id: 6, name: "回收站", image: "https://api.iconify.design/ic:round-delete.svg", router: "/main/trash" }
 ])
 
-</script>
-
-<script>
-export default {
-  activated() {
-    let activeIndex = this.$route.path;
-    this.$nextTick(() => {
-      this.$refs.menuItems.forEach(item => {
-        if (item.index === activeIndex) {
-          item.$el.classList.add("is-active");
-        }
-        else {
-          item.$el.classList.remove("is-active");
-        }
-        if (item.$el.classList.contains("is-hover")) {
-          item.$el.classList.remove("is-hover");
-          item.$el.classList.add("el-menu-item--hover");
-        }
-      });
-    });
-  },
-  methods: {
-    onClick(path) {
-      router.push(path);
-    },
-    onMouseEnter(item) {
-      item.$el.classList.add("is-hover");
-    },
-    onMouseLeave(item) {
-      item.$el.classList.remove("is-hover");
-    }
-  },
-  components: { Location }
+const onClick = (path) => {
+  router.push(path)
 }
+const onMouseEnter = (item) => {
+  item.$el.classList.add("is-hover");
+}
+const onMouseLeave = (item) => {
+  item.$el.classList.remove("is-hover");
+}
+const activated = () => {
+  let activeIndex = router.currentRoute.value.path;
+  this.$nextTick(() => {
+    this.$refs.menuItems.forEach(item => {
+      if (item.index === activeIndex) {
+        item.$el.classList.add("is-active");
+      }
+      else {
+        item.$el.classList.remove("is-active");
+      }
+      if (item.$el.classList.contains("is-hover")) {
+        item.$el.classList.remove("is-hover");
+        item.$el.classList.add("el-menu-item--hover");
+      }
+    });
+  });
+}
+
 </script>
-
-
 
 <style scoped>
 

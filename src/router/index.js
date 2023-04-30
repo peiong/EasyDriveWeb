@@ -3,7 +3,7 @@ import { useStore } from '@/stores'
 import '../style.css'
 
 import main from '@/components/afterLogin/Main.vue'
-import file from '@/components/afterLogin/FileManagement.vue'
+import file from '@/components/afterLogin/File.vue'
 import uploading from '@/components/afterLogin/UpLoading.vue'
 import downloading from '@/components/afterLogin/Downloading.vue'
 import completed from '@/components/afterLogin/Completed.vue'
@@ -81,7 +81,7 @@ router.beforeEach((to, from, next) => {
         next('/main')
     } else {
         next()
-    }
+    } 
 })
 
 export default router
