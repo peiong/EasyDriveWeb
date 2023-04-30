@@ -6,19 +6,7 @@
     </div>
 </template> 
 
-<script>
-export default {
-    data() {
-        return {
-            title: '账号详情',
-        }
-    },
-    created() {
-        this.$emit('ChangeActive', 7);
-    },
-
-    
-
-}
-
+<script setup>
+import { ref } from 'vue'
+const title = ref('账号详情')
 </script>

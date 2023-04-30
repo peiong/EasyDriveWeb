@@ -12,23 +12,9 @@
     </div>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            title: '正在下载',
-        }
-    },
-    created() {
-        this.$emit('ChangeActive', 3);
-    },
+<script setup>
+import { ref } from 'vue'
 
-    methods: {
-        formatter(row, column) {
-            return row.address;
-        }
-    }
-
-}
-
+const title = ref('正在下载')
+const formatter = (row, column) => { return row.address; }
 </script>

@@ -14,23 +14,9 @@
     </div>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            title: '重复文件',
-        }
-    },
-    created() {
-        this.$emit('ChangeActive', 5);
-    },
-
-    methods: {
-        formatter(row, column) {
-            return row.address;
-        }
-    }
-
-}
+<script setup>
+import { ref } from 'vue'
+const title = ref('重复文件')
+const formatter = (row, column) => { return row.address; }
 
 </script>

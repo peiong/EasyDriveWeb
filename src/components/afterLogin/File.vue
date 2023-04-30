@@ -15,31 +15,12 @@
     </div>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            title: "文件",
-        }
-    },
-    created() {
-        this.$emit("ChangeActive", 1);
-    },
+<script setup>
+import { ref } from 'vue'
 
-    methods: {
-        formatter(row, column) {
-            return row.address;
-        },
-        // 上传文件
-        uploadFile() {
-            this.$router.push({ path: "/upload" });
-        },
-        // 下载文件
-        downloadFile() {
-            this.$router.push({ path: "/download" });
-        },
-    }
-}
+const title = ref('文件')
+const formatter = (row, column) => { return row.address; }
+const downloadFile = () => { router.push({ path: "/download" }); }
 
 </script>
 

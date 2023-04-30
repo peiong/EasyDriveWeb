@@ -14,23 +14,8 @@
     </div>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            title: '回收站',
-        }
-    },
-    created() {
-        this.$emit('ChangeActive', 6);
-    },
-
-    methods: {
-        formatter(row, column) {
-            return row.address;
-        }
-    }
-
-}
-
+<script setup>
+import { ref } from 'vue'
+const title = ref('回收站')
+const formatter = (row, column) => { return row.address; }
 </script>
