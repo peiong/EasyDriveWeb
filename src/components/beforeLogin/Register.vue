@@ -125,13 +125,13 @@ const register = () => {
         if (response.data) {
           ElMessage.warning('用户名已被占用')
         } else {
-          axios.post(`/register/${form.verify}/${form.account}`, form)
+          axios.post(`/before/register/${form.verify}/${form.account}`, form)
             .then(response => {
               if (response.data) {
                 ElMessage.success('注册成功，请登录')
                 router.push('/login')
               } else {
-                ElMessage.error('注册失败，请联系管理员')
+                ElMessage.error('信息有误，请重新输入')
               }
             })
         }
