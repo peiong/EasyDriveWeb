@@ -178,7 +178,15 @@ export default {
 
 .preference-button {
   background-color: rgb(182, 255, 215);
-  border: 1px solid rgb(210, 210, 210);
+  border: 1px solid rgb(230, 230, 230);
   color: #30cf79;
 }
+
+.preference-button:hover {
+  background-color: rgb(182, 255, 215);
+  border: 1px solid rgb(210, 210, 210);
+  color: #30cf79;
+  
+}
+
 </style>

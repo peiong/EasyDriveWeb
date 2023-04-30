@@ -31,42 +31,43 @@ const router = createRouter(
                 children: [
                     {
                         path: "file",
-                        name: 'file',
+                        name: 'after-file',
                         component: file
                     },
                     {
                         path: "uploading",
-                        name: 'uploading',
+                        name: 'after-uploading',
                         component: uploading
                     },
                     {
                         path: "downloading",
-                        name: 'downloading',
+                        name: 'after-downloading',
                         component: downloading
                     },
                     {
                         path: "completed",
-                        name: 'completed',
+                        name: 'after-completed',
                         component: completed
                     },
                     {
                         path: "scan",
-                        name: 'scan',
+                        name: 'after-scan',
                         component: scan
                     },
                     {
                         path: "trash",
-                        name: 'trash',
+                        name: 'after-trash',
                         component: trash
                     },
                     {
                         path: "preference",
-                        name: 'preference',
+                        name: 'after-preference',
                         component: preference
                     },
                 ]
             },
-        ]
+        ],
+        mode: 'history'
     }
 )
 
