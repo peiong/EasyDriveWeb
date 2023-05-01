@@ -10,6 +10,7 @@ import completed from '@/components/afterLogin/Completed.vue'
 import scan from '@/components/afterLogin/Scan.vue'
 import trash from '@/components/afterLogin/Trash.vue'
 import preference from '@/components/afterLogin/Preference.vue'
+import { ElMessage } from 'element-plus'
 
 
 const router = createRouter(
@@ -73,7 +74,7 @@ const router = createRouter(
 
 router.beforeEach((to, from, next) => {
     const store = useStore()
-    if (store.auth.user != null && to.name.startsWith('before-')) {
+    if (store.auth.user != null && to.name.startsWith('before')) {
         next('/main')
     } else if (store.auth.user == null && to.fullPath.startsWith('/main')) {
         next('/')
