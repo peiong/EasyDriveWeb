@@ -2,15 +2,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useStore } from '@/stores'
 import '../style.css'
 
-import main from '@/components/afterLogin/Main.vue'
-import file from '@/components/afterLogin/File.vue'
-import uploading from '@/components/afterLogin/UpLoading.vue'
-import downloading from '@/components/afterLogin/Downloading.vue'
-import completed from '@/components/afterLogin/Completed.vue'
-import scan from '@/components/afterLogin/Scan.vue'
-import trash from '@/components/afterLogin/Trash.vue'
-import preference from '@/components/afterLogin/Preference.vue'
-import { ElMessage } from 'element-plus'
+import main from '@/views/afterLogin/Main.vue'
+import file from '@/views/afterLogin/File.vue'
+import uploading from '@/views/afterLogin/UpLoading.vue'
+import downloading from '@/views/afterLogin/Downloading.vue'
+import completed from '@/views/afterLogin/Completed.vue'
+import scan from '@/views/afterLogin/Scan.vue'
+import trash from '@/views/afterLogin/Trash.vue'
+import preference from '@/views/afterLogin/Preference.vue'
 
 
 const router = createRouter(
@@ -22,9 +21,9 @@ const router = createRouter(
                 name: 'before',
                 redirect: '/login',
                 children: [
-                    { path: 'login', name: 'before-login', component: () => import('@/components/beforeLogin/Login.vue') },
-                    { path: 'register', name: 'before-register', component: () => import('@/components/beforeLogin/Register.vue') },
-                    { path: 'recover', name: 'before-recover', component: () => import('@/components/beforeLogin/Recover.vue') }
+                    { path: 'login', name: 'before-login', component: () => import('@/views/beforeLogin/Login.vue') },
+                    { path: 'register', name: 'before-register', component: () => import('@/views/beforeLogin/Register.vue') },
+                    { path: 'recover', name: 'before-recover', component: () => import('@/views/beforeLogin/Recover.vue') }
                 ]
             },
             {

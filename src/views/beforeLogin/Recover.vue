@@ -118,7 +118,7 @@ const recover = () => {
 }
 </script>
 
-<style lang='less' scoped>
+<style scoped>
 .el-container {
   max-height: 500px;
 }

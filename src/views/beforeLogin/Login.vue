@@ -62,12 +62,10 @@ const login = () => {
       username: form.account,
       password: form.password,
       remember: true
-    }, (message) => {
-      ElMessage.success(message)
-      get('/api/user/me', (message) => {
-        store.auth.user = message
-        localStorage.setItem('username',message.username)
-        router.push('/main')
+    }, () => {
+      get('/api/user/me', (response) => {
+        store.auth.user = response
+        router.go('/main')
       }, () => {
         store.auth.user = null
       })
@@ -76,7 +74,7 @@ const login = () => {
 }
 
 </script>
-<style lang='less' scoped>
+<style scoped>
 .logo {
   text-align: center;
   margin: auto auto;

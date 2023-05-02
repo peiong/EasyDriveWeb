@@ -2,46 +2,48 @@
   <div class="Main-layout">
     <el-container>
       <el-aside class="mobile" width="190px">
-        <KeepAlive>
-          <el-menu :default-active="$route.path" router text-color='rgb(25,25,25)'>
-            <div class='head-photo'>
-              <div style='text-align: center; color: black;'>
-                <img style='width: 45px; vertical-align: middle;'
-                  src="https://api.iconify.design/icon-park:link-cloud.svg">
-                <div style="display: inline; font-size: 25px; font-weight: bolder;"> 
-                  <i slot="suffix">&nbsp; EasyDrive</i>
-                </div>
+        <el-menu :default-active="$route.path" router text-color='rgb(25,25,25)'>
+          <div class='head-photo'>
+            <div style='text-align: center; color: black;'>
+              <img style='width: 45px; vertical-align: middle;' src="https://api.iconify.design/icon-park:link-cloud.svg">
+              <div style="display: inline; font-size: 25px; font-weight: bolder;">
+                <i slot="suffix">&nbsp; EasyDrive</i>
               </div>
             </div>
-            <el-menu-item v-for="item in items" :key="item.id" :index="item.router" v-model="item.active"
-              @click="onClick(item.router)" 
-              @mouseenter="onMouseEnter(item)" 
-              @mouseleave="onMouseLeave(item)">
-              <img style="width: 25px;" v-bind:src="item.image">
-              <span>&nbsp;{{ item.name }}</span>
-            </el-menu-item>
-            <div class='bottom-menu'>
-              <el-popover popper-class="user-el-popover" placement="top" trigger="click">
-                <template #reference>
-                  <el-avatar :size='size' slot='reference' style="cursor: pointer; padding: 0;"
-                    src='https://f005.backblazeb2.com/file/img-forWeb/uPic/lofi.png'>
-                  </el-avatar>
-                </template>
-                <div style='text-align: center; font-size: 18px;'> {{ username }} </div>
-                <div style=' margin-top: 7px; text-align: center; cursor: pointer;'>
-                  <el-button class="preference-button"
-                    @click="onClick('/main/preference')">账号详情</el-button>
-                  <br>
-                  <el-button @click="logout()" type="danger">退出登录</el-button>
-                </div>
-              </el-popover>
-            </div>
-          </el-menu>
-        </KeepAlive>
+          </div>
+          <el-menu-item v-for="item in items" :key="item.id" :index="item.router" v-model="item.active"
+            @click="onClick(item.router)" @mouseenter="onMouseEnter(item)" @mouseleave="onMouseLeave(item)">
+            <img class="menu-icon" :src="item.image">
+            <span>&nbsp;{{ item.name }}</span>
+          </el-menu-item>
+          <div class='bottom-menu'>
+            <el-popover popper-class="user-el-popover" placement="top" trigger="click">
+              <template #reference>
+                <el-avatar :size='size' slot='reference' style="cursor: pointer; padding: 0;"
+                  src='https://f005.backblazeb2.com/file/img-forWeb/uPic/lofi.png'>
+                </el-avatar>
+              </template>
+              <div style='text-align: center; font-size: 18px;'> {{ username }} </div>
+              <div style=' margin-top: 7px; text-align: center; cursor: pointer;'>
+                <el-button class="preference-button" @click="onClick('/main/preference')">账号详情</el-button>
+                <br>
+                <el-button @click="logout()" type="danger">退出登录</el-button>
+              </div>
+            </el-popover>
+          </div>
+        </el-menu>
       </el-aside>
-      <el-main>
-        <router-view></router-view>
-      </el-main>
+      <el-container>
+        <el-header>
+          <header></header>
+          <router-view>
+
+          </router-view>
+        </el-header>
+        <el-main>
+        文件展示
+        </el-main>
+      </el-container>
     </el-container>
   </div>
 </template>
@@ -51,14 +53,13 @@ import { get } from '@/net'
 import { ref } from 'vue'
 import router from '@/router'
 import { useStore } from '@/stores'
-import { ElMessage } from 'element-plus'
 
 const username = ref(localStorage.getItem('username'))
 
 const store = useStore()
 const logout = () => {
   get('/logout', (message) => {
-    ElMessage.warning(message)
+    //ElMessage.warning(message)
     store.auth.user = null
     localStorage.removeItem('username')
     router.push('/login')
@@ -106,10 +107,9 @@ const activated = () => {
 </script>
 
 <style scoped>
-
 .model {
-  min-width: 160px; 
-  max-width: 33.5%; 
+  min-width: 160px;
+  max-width: 33.5%;
   min-height: 630px;
 }
 
@@ -141,6 +141,11 @@ const activated = () => {
   border-right: 0;
   height: 100%;
   padding: 0;
+}
+
+.menu-icon {
+  /**图标大小 */
+  width: 25px;
 }
 
 .el-menu-item.is-active {
@@ -188,7 +193,6 @@ const activated = () => {
   background-color: rgb(182, 255, 215);
   border: 1px solid rgb(210, 210, 210);
   color: #30cf79;
-  
-}
 
+}
 </style>
