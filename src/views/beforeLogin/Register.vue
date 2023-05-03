@@ -40,7 +40,8 @@
       </el-input>
       <el-button :plain="true" @click="register" type="primary">提交</el-button>
       <div style="font-size: 15px;">
-        <input v-model="form.checked" type="checkbox" /><i style="color: rgb(69, 69, 69);"> 我已阅读并同意遵守 </i>
+        <input v-model="form.checked" type="checkbox" />
+        <i style="color: rgb(69, 69, 69);"> 我已阅读并同意遵守 </i>
         <a style="color: rgb(69, 69, 69); text-decoration: underline;" href='https://privacy.peirong.co/contact.html'>
           用户协议</a> <i style="color: rgb(69, 69, 69);">和&nbsp;</i>
         <a style="color: rgb(69, 69, 69); text-decoration: underline;" href='https://privacy.peirong.co'> 隐私政策</a>

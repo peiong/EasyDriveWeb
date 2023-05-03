@@ -1,21 +1,45 @@
 <template>
     <div>
-        <div>
-            <h2 style="color: rgb(100,100,100); text-align: left; margin-left: 10px;">{{ title }}</h2>
-        </div>
-        <el-table :data="tableData" style="min-width: 40%; max-width: 70%;" :default-sort="{ prop: 'name', order: '' }">
-            <el-table-column prop="name" label="名称" sortable>
-            </el-table-column>
-            <el-table-column prop="size" label="大小" sortable>
-            </el-table-column>
-            <el-table-column prop="time" label="添加日期" :formatter="formatter">
-            </el-table-column>
-        </el-table>
+        <el-container>
+            <el-header style="border-bottom: 1px solid rgb(230, 230, 230);">
+                <div style="color: rgb(100,100,100); text-align: left; height: 110px;">
+                    <h2>{{ title }}</h2>
+                    <el-button type="primary" @click="scan">清空</el-button>
+                </div>
+            </el-header>
+            <el-main>
+                <div style=" text-align: left;">
+                    
+                </div>
+            </el-main>
+        </el-container>
     </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 const title = ref('正在上传')
-const formatter = (row, column) => { return row.address; }
+
 </script>
+
+<style scoped>
+.el-header {
+    height: 100%;
+}
+
+.el-button--primary {
+    border-radius: 35px;
+    width: 100px;
+    height: 40px;
+    margin-top: 33px;
+    border: 1px solid rgb(220, 220, 220);
+    background-color: #ffffff;
+    color: #409eff;
+}
+
+.el-button--primary:hover {
+    border: 1px solid rgb(220, 220, 220);
+    background-color: rgb(252, 252, 252);
+    color: #409eff;
+}
+</style>

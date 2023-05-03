@@ -33,17 +33,9 @@
           </div>
         </el-menu>
       </el-aside>
-      <el-container>
-        <el-header>
-          <header></header>
-          <router-view>
-
-          </router-view>
-        </el-header>
-        <el-main>
-        文件展示
-        </el-main>
-      </el-container>
+      <el-main>
+        <router-view />
+      </el-main>
     </el-container>
   </div>
 </template>
@@ -55,11 +47,11 @@ import router from '@/router'
 import { useStore } from '@/stores'
 
 const username = ref(localStorage.getItem('username'))
+const text = ref('sdjbcskjcb')
 
 const store = useStore()
 const logout = () => {
-  get('/logout', (message) => {
-    //ElMessage.warning(message)
+  get('/logout', () => {
     store.auth.user = null
     localStorage.removeItem('username')
     router.push('/login')
@@ -125,11 +117,13 @@ const activated = () => {
 
 .el-main {
   padding: 0;
-  min-height: 635px;
+  max-width: 1024px;
+  /* min-height: 635px; */
 }
 
 .el-aside {
   position: relative;
+  min-height: 650px;
   height: 100vh;
   background-color: rgb(242, 242, 244);
   border-right: 1px solid rgb(242, 242, 244);
