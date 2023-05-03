@@ -54,7 +54,7 @@ const logout = () => {
   get('/logout', () => {
     store.auth.user = null
     localStorage.removeItem('username')
-    router.push('/login')
+    router.go('/login')
   })
 }
 
@@ -125,6 +125,7 @@ const activated = () => {
   position: relative;
   min-height: 650px;
   height: 100vh;
+  width: 165px;
   background-color: rgb(242, 242, 244);
   border-right: 1px solid rgb(242, 242, 244);
 }

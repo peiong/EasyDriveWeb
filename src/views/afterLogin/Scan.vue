@@ -27,6 +27,8 @@ const title = ref('重复文件')
 }
 
 .el-button--primary {
+    position: relative;
+    z-index: 1;
     border-radius: 35px;
     width: 100px;
     height: 40px;
@@ -40,6 +42,9 @@ const title = ref('重复文件')
     border: 1px solid rgb(220, 220, 220);
     background-color: rgb(252, 252, 252);
     color: #409eff;
+    cursor: pointer;
+    transform: scale(1.1);
+    transition: all 0.3s;
 }
 
 </style>

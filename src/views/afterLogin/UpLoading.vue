@@ -28,6 +28,8 @@ const title = ref('正在上传')
 }
 
 .el-button--primary {
+    position: relative;
+    z-index: 1;
     border-radius: 35px;
     width: 100px;
     height: 40px;
@@ -35,11 +37,14 @@ const title = ref('正在上传')
     border: 1px solid rgb(220, 220, 220);
     background-color: #ffffff;
     color: #409eff;
+    cursor: pointer;
 }
 
 .el-button--primary:hover {
     border: 1px solid rgb(220, 220, 220);
     background-color: rgb(252, 252, 252);
     color: #409eff;
+    transform: scale(1.1);
+    transition: all 0.3s;
 }
 </style>

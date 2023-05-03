@@ -61,6 +61,8 @@ const items = ref([
 }
 
 .el-button--danger {
+    position: relative;
+    z-index: 2;
     border-radius: 35px;
     width: 100px;
     height: 40px;

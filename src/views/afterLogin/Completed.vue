@@ -62,6 +62,8 @@ const items = ref([
 }
 
 .el-button--primary {
+    position: relative;
+    z-index: 1;
     border-radius: 35px;
     width: 100px;
     height: 40px;
@@ -75,6 +77,8 @@ const items = ref([
     border: 1px solid rgb(220, 220, 220);
     background-color: rgb(252, 252, 252);
     color: #409eff;
+    transform: scale(1.1);
+    transition: all 0.3s;
 }
 
 .el-col {
