@@ -4,7 +4,7 @@
             <el-header style="border-bottom: 1px solid rgb(230, 230, 230);">
                 <div style="color: rgb(100,100,100); text-align: left; height: 110px;">
                     <h2>{{ title }}</h2>
-                    <el-button type="danger" @click="scan">彻底删除</el-button>
+                    <el-button type="danger" @click="deletePermanently">彻底删除</el-button>
                 </div>
             </el-header>
             <el-main style="min-width: 960px;">
@@ -46,14 +46,18 @@ const items = ref([
     { id: 16, name: "foldername", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Folder.png" },
 ])
 
+const deletePermanently = () => {
+    items.value = []
+}
+
 </script>
 
 <style scoped>
-
 .el-header {
     height: 100%;
 
 }
+
 .head-title {
     color: rgb(100, 100, 100);
     text-align: left;
@@ -86,5 +90,4 @@ const items = ref([
     width: 100%;
     display: block;
 }
-
 </style>

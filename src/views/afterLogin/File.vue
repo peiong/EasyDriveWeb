@@ -6,8 +6,8 @@
                     <div class="head-title">
                         <h2>{{ title }}</h2>
                     </div>
-                    <div class="components" style="height: 53px; text-align: left;">
-                        <el-input @keyup.enter="search" v-model="search" class="primary" placeholder="搜索">
+                    <div style="height: 53px; text-align: left;">
+                        <el-input  @keyup.enter="search" v-model="search" class="primary" placeholder="搜索">
                             <template #prefix>
                                 <el-icon slot="prefix">
                                     <img style="width: 23px; cursor: pointer;" @click="search"
@@ -22,8 +22,6 @@
                             </el-icon>
                         </el-button>
                     </div>
-
-
                 </div>
             </el-header>
             <el-main style="min-width: 1024px;">
@@ -47,6 +45,7 @@
 
 <script setup>
 import { ref } from 'vue'
+
 
 const title = ref("文件")
 const search = ref('')
@@ -91,7 +90,6 @@ const handleButtonClick = (index) => {
 }
 
 .primary {
-    border-radius: 30px;
     width: 230px;
     height: 42px;
     margin-right: 15px;

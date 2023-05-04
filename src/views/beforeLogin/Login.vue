@@ -66,6 +66,9 @@ const login = () => {
       get('/api/user/me', (response) => {
         store.auth.user = response
         localStorage.setItem("username",response.username)
+        localStorage.setItem("email",response.email)
+        localStorage.setItem("phone",response.phone)
+        localStorage.setItem("avatar",response.avatar)
         router.go('/main')
       }, () => {
         store.auth.user = null

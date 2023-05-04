@@ -4,7 +4,7 @@
             <el-header style="border-bottom: 1px solid rgb(230, 230, 230);">
                 <div style="color: rgb(100,100,100); text-align: left; height: 110px;">
                     <h2>{{ title }}</h2>
-                    <el-button type="primary" @click="scan">清空</el-button>
+                    <el-button type="primary" @click="clear">清空</el-button>
                 </div>
             </el-header>
             <el-main style="min-width: 960px;">
@@ -45,6 +45,10 @@ const items = ref([
     { id: 15, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/ZIP.png" },
     { id: 16, name: "foldername", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Folder.png" },
 ])
+
+const clear = () => {
+    items.value = []
+}
 
 
 </script>
