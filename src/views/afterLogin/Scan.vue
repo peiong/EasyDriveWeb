@@ -2,7 +2,7 @@
     <div>
         <el-container>
             <el-header style="border-bottom: 1px solid rgb(230, 230, 230);">
-                <div style="color: rgb(100,100,100); text-align: left; height: 110px;">
+                <div style="color: rgb(100,100,100); text-align: left; height: 109px;">
                     <h2>{{ title }}</h2>
                     <el-button type="primary" @click="scan">扫描</el-button>
                 </div>
@@ -43,7 +43,7 @@ const title = ref('重复文件')
     background-color: rgb(252, 252, 252);
     color: #409eff;
     cursor: pointer;
-    transform: scale(1.1);
+    transform: scale(1.05);
     transition: all 0.3s;
 }
 

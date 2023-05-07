@@ -5,7 +5,7 @@
         <el-menu :default-active="$route.path" router text-color='rgb(25,25,25)'>
           <div class='head-photo'>
             <div style='text-align: center; color: black;'>
-              <img style='width: 45px; vertical-align: middle;' src="https://api.iconify.design/icon-park:link-cloud.svg">
+              <img style='width: 45px; vertical-align: middle;' src="https://f005.backblazeb2.com/file/img-forWeb/uPic/Cloud2.png">
               <div style="display: inline; font-size: 25px; font-weight: bolder;">
                 <i slot="suffix">&nbsp; EasyDrive</i>
               </div>
@@ -19,7 +19,7 @@
           <div class='bottom-menu'>
             <el-popover popper-class="user-el-popover" placement="top" trigger="click">
               <template #reference>
-                <el-avatar :size='size' slot='reference' style="cursor: pointer; padding: 0;"
+                <el-avatar :size="size" slot="reference" style="cursor: pointer; padding: 0;"
                   src='https://f005.backblazeb2.com/file/img-forWeb/uPic/lofi.png'>
                 </el-avatar>
               </template>
@@ -53,7 +53,7 @@ const store = useStore()
 const logout = () => {
   get('/logout', () => {
     store.auth.user = null
-    localStorage.removeItem('username')
+    localStorage.clear()
     router.go('/login')
   })
 }
@@ -118,7 +118,8 @@ const activated = () => {
 .el-main {
   padding: 0;
   max-width: 1024px;
-  /* min-height: 635px; */
+  height: 100vh;
+  min-height: 650px;
 }
 
 .el-aside {

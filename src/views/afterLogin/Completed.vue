@@ -2,7 +2,7 @@
     <div class="file-layout">
         <el-container>
             <el-header style="border-bottom: 1px solid rgb(230, 230, 230);">
-                <div style="color: rgb(100,100,100); text-align: left; height: 110px;">
+                <div style="color: rgb(100,100,100); text-align: left; height: 109px;">
                     <h2>{{ title }}</h2>
                     <el-button type="primary" @click="clear">清空</el-button>
                 </div>
@@ -28,22 +28,22 @@ import { ref } from 'vue'
 const title = ref('传输完成')
 
 const items = ref([
-    { id: 1, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/TXT2.png" },
-    { id: 2, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Circled%20Play.png" },
-    { id: 3, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/ZIP.png" },
-    { id: 4, name: "foldername", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Folder.png" },
-    { id: 5, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/TXT2.png" },
-    { id: 6, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Circled%20Play.png" },
-    { id: 7, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/ZIP.png" },
-    { id: 8, name: "foldername", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Folder.png" },
-    { id: 9, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/TXT2.png" },
-    { id: 10, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Circled%20Play.png" },
-    { id: 11, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/ZIP.png" },
-    { id: 12, name: "foldername", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Folder.png" },
-    { id: 13, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/TXT2.png" },
-    { id: 14, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Circled%20Play.png" },
-    { id: 15, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/ZIP.png" },
-    { id: 16, name: "foldername", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Folder.png" },
+    // { id: 1, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/TXT2.png" },
+    // { id: 2, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Circled%20Play.png" },
+    // { id: 3, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/ZIP.png" },
+    // { id: 4, name: "foldername", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Folder.png" },
+    // { id: 5, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/TXT2.png" },
+    // { id: 6, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Circled%20Play.png" },
+    // { id: 7, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/ZIP.png" },
+    // { id: 8, name: "foldername", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Folder.png" },
+    // { id: 9, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/TXT2.png" },
+    // { id: 10, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Circled%20Play.png" },
+    // { id: 11, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/ZIP.png" },
+    // { id: 12, name: "foldername", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Folder.png" },
+    // { id: 13, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/TXT2.png" },
+    // { id: 14, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Circled%20Play.png" },
+    // { id: 15, name: "filename", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/ZIP.png" },
+    // { id: 16, name: "foldername", briefly: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Folder.png" },
 ])
 
 const clear = () => {
@@ -81,7 +81,7 @@ const clear = () => {
     border: 1px solid rgb(220, 220, 220);
     background-color: rgb(252, 252, 252);
     color: #409eff;
-    transform: scale(1.1);
+    transform: scale(1.05);
     transition: all 0.3s;
 }
 

@@ -2,7 +2,7 @@
   <el-container @keyup.enter="login">
     <el-main>
       <div class="logo">
-        <img style="width: 48px; vertical-align: middle;" src='https://api.iconify.design/icon-park:link-cloud.svg'>
+        <img style="width: 55px; vertical-align: middle;" src='https://f005.backblazeb2.com/file/img-forWeb/uPic/Cloud2.png'>
         <div style='display: inline;'> <i slot='suffix'> EasyDrive</i></div>
       </div>
       <h1 style="margin-bottom: 15px;" class='login-title'>登录</h1>
@@ -69,6 +69,7 @@ const login = () => {
         localStorage.setItem("email",response.email)
         localStorage.setItem("phone",response.phone)
         localStorage.setItem("avatar",response.avatar)
+        localStorage.setItem("id",response.id)
         router.go('/main')
       }, () => {
         store.auth.user = null
