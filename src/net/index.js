@@ -9,6 +9,9 @@ const emailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
 const passwordReg = /^(?=.*[a-zA-Z])(?=.*[1-9])(?=.*[\W]).{6,}$/
 const nameReg = /^[\u4e00-\u9fa5a-zA-Z0-9_-]{4,16}$/
 
+const remoteServer = 'https://peirong.co:8443/EasyDrive'
+const localServer = 'http://localhost:8080'
+
 function post(url, data, success, failure = defaultFailure, error = defaultError) {
     axios.post(url, data, {
         headers: {
@@ -34,4 +37,4 @@ function get(url, success, failure = defaultFailure, error = defaultError) {
     }).catch(error)
 }
 
-export {get, post, nameReg, phoneReg, emailReg, passwordReg}
+export {get, post, nameReg, phoneReg, emailReg, passwordReg, remoteServer, localServer}

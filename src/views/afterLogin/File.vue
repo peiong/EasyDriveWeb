@@ -1,18 +1,45 @@
 <template>
     <div class="file-layout">
+        <!--上传文件对话框-->
         <el-dialog v-model="centerDialogVisible" title="上传" width="50%" center>
-            <el-upload class="upload-demo" drag :data="data" :show-file-list="false"
-                :action="'https://peirong.co:8443/EasyDrive/file/upload'" :before-upload="beforeUpload" :on-success="onUploadSuccess">
+            <el-upload class="upload-demo" drag :data="data" :show-file-list="false" :action="localServer + '/file/upload'"
+                :before-upload="beforeUpload" :on-success="onUploadSuccess">
                 <img style="width: 100px;" src="https://f005.backblazeb2.com/file/img-forWeb/uPic/Cloud2.png">
                 <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
         </el-dialog>
-        <el-dialog v-model="showDetail" title="详情" width="70%" center top="5vh" destroy-on-close>
-            <img v-if="fileType == '.png'" :src="URL" style="width: 100%; height: 70vh;object-fit: contain;">
-            <video v-else-if="fileType == '.mp4'" :src="URL" style="width: 100%; height: 70vh;object-fit: contain;" controls
-                autoplay preload="auto"></video>
-            <audio v-else-if="fileType == '.mp3'" controls :src="URL" style="width: 100%; object-fit: contain;"></audio>
+
+        <!--文件详情对话框-->
+        <el-dialog v-model="showDetail" title="文件详情" width="70%" center top="5vh" destroy-on-close>
+            <img v-if="fileType == '.png'" :src="URL" class="dialog-display">
+            <video v-else-if="fileType == '.mp4'" :src="URL" class="dialog-display" controls autoplay
+                preload="auto"></video>
+            <audio v-else-if="fileType == '.mp3'" controls :src="URL" class="dialog-display"></audio>
         </el-dialog>
+
+        <!--修改文件名对话框-->
+        <el-dialog v-model="dialogFormVisible" title="修改文件名">
+            <img v-if="fileType == '.png'" :src="URL" class="dialog-display">
+            <video v-else-if="fileType == '.mp4'" :src="URL" class="dialog-display" controls></video>
+            <audio v-else-if="fileType == '.mp3'" controls :src="URL" class="dialog-display"></audio>
+            <el-input style="width: 450px; height: 40px; margin: 10px; " v-model="form.rename"
+                :placeholder="'当前文件名：' + currentFilename"></el-input>
+            <br>
+            <el-button class="rename-button">确认</el-button>
+        </el-dialog>
+
+        <!--删除文件对话框-->
+        <el-dialog v-model="outerVisible" title="确认删除该文件吗？" center >
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button @click="outerVisible = false">取消</el-button>
+                    <el-button type="primary" @click="remove">
+                        确认
+                    </el-button>
+                </div>
+            </template>
+        </el-dialog>
+
         <el-container>
             <el-header>
                 <div>
@@ -46,20 +73,23 @@
             <el-main v-if="refresh">
                 <el-checkbox-group v-model="checkList">
                     <el-card v-for="(item, index) in fileList" :key="index" :span="3" :body-style="{ padding: '10px' }">
-                        <el-checkbox :label="item.filepath"
-                            style="position: absolute; left: 2px; top: -7px;"><br></el-checkbox>
-                        <div  @click="open(item.filepath)">
+                        <el-checkbox :label="index" style="position: absolute; left: 2px; top: -7px;"><br></el-checkbox>
+                        <div @click="open(item.filepath)">
                             <img v-if="!item.filename.toLowerCase().endsWith('.mp4')"
                                 :src="selectCover(item.filename.toString(), item.filepath.toString())" class="image" />
                             <video v-else :src="videosrc(item.filepath)" class="image" preload="auto"
                                 style="object-fit: cover;"></video>
                         </div>
                         <div class="elcard-font">
-                            <div>{{ item.filename.toString().length <= 10 ? item.filename :
-                                item.filename.toString().substring(0, 7) + '...' +
-                                item.filename.toString().substring(item.filename.lastIndexOf('.') + 1) }}</div>
-                            </div>
-                            <div class="elcard-font">{{ item.size }}</div>
+                            <span>
+                                {{ item.filename.toString().length <= 10 ? item.filename :
+                                    item.filename.toString().substring(0, 7) + '...' +
+                                    item.filename.toString().substring(item.filename.lastIndexOf('.') + 1) }} </span>
+                        </div>
+                        <div class="elcard-font">
+                            <p>
+                                {{ item.size <= 1024 ? item.size + 'KB' : (item.size / 1024).toFixed(1) + 'MB' }}</p>
+                        </div>
                     </el-card>
                 </el-checkbox-group>
             </el-main>
@@ -68,9 +98,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
+import { localServer } from '@/net'
+
 const checkList = ref([])
 const title = ref("文件")
 const search = ref('')
@@ -81,33 +113,42 @@ const data = ref({
 })
 const fileType = ref('')
 const URL = ref('')
+
+const outerVisible = ref(false)
+
 const centerDialogVisible = ref(false)
+const dialogFormVisible = ref(false)
+
+const form = reactive({
+    rename: '',
+})
+const currentFilename = ref('')
 const showDetail = ref(false)
 const fileList = ref([])
 const refresh = ref(true)
 const videosrc = (filepath) => {
-    return 'https://peirong.co:8443/EasyDrive/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath
+    return localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath
 }
 
 const open = (filepath) => {
     if (filepath.endsWith('.png') || filepath.endsWith('.jpg') || filepath.endsWith('.jpeg') || filepath.endsWith('.gif')) {
         fileType.value = '.png'
-        URL.value = 'https://peirong.co:8443/EasyDrive/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath
+        URL.value = localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath
         showDetail.value = true
     } else if (filepath.endsWith('.zip') || filepath.endsWith('.rar') || filepath.endsWith('.7z')) {
         ElMessage.warning("无法在线预览压缩包，请下载查看")
     } else if (filepath.endsWith('.mp4') || filepath.endsWith('.MP4')) {
         fileType.value = '.mp4'
-        URL.value = 'https://peirong.co:8443/EasyDrive/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath
+        URL.value = localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath
         showDetail.value = true
     } else if (filepath.endsWith('.mp3') || filepath.endsWith('.MP3')) {
         fileType.value = '.mp3'
-        URL.value = 'https://peirong.co:8443/EasyDrive/file/getImage?owner=' + localStorage.getItem('id') + '&path=' + filepath
+        URL.value = localServer + '/file/getImage?owner=' + localStorage.getItem('id') + '&path=' + filepath
         showDetail.value = true
     } else if (filepath.endsWith('.pdf')) {
-        window.open('https://peirong.co:8443/EasyDrive/file/getPDF?owner=' + localStorage.getItem('id') + '&path=' + filepath)
-    } else if(filepath.endsWith('.docx') || filepath.endsWith('.doc') || filepath.endsWith('.ppt') || filepath.endsWith('.pptx') || filepath.endsWith('.xlsx')) {
-        window.open('https://view.xdocin.com/view?src='+ encodeURIComponent('https://peirong.co:8443/EasyDrive/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath))
+        window.open(localServer + '/file/getPDF?owner=' + localStorage.getItem('id') + '&path=' + filepath)
+    } else if (filepath.endsWith('.docx') || filepath.endsWith('.doc') || filepath.endsWith('.ppt') || filepath.endsWith('.pptx') || filepath.endsWith('.xlsx')) {
+        window.open('http://view.xdocin.com/view?src=' + encodeURIComponent(localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath))
     }
 }
 
@@ -119,6 +160,25 @@ const onUploadSuccess = (response) => {
     } else {
         ElMessage.error("上传失败")
     }
+}
+
+const remove = () => {
+    for (let i = 0; i < checkList.value.length; i++) {
+        setTimeout(() => {
+            axios.get(localServer + '/file/delete?owner=' + localStorage.getItem('id') + '&path=' + fileList.value[checkList.value[i]].filepath)
+                .then(res => {
+                    if (res.data) {
+                        if (i === checkList.value.length - 1) {
+                            ElMessage.success("删除成功")
+                            changFileList()
+                        }
+                    } else if (!res.data) {
+                        ElMessage.error("删除失败")
+                    }
+                })
+        }, 200);
+    }
+    outerVisible.value = false
 }
 
 const buttons = ref([
@@ -134,18 +194,33 @@ const handleButtonClick = (index) => {
     if (index === 0) {
         centerDialogVisible.value = true
     } else if (index === 1) {
-        for (let i = 0; i < checkList.value.length; i++) {
-            setTimeout(() => {
-                window.open('https://peirong.co:8443/EasyDrive/file/download?owner=' + localStorage.getItem('id') + '&path=' + checkList.value[i])
-            }, 200);
+        if (checkList.value.length === 0) {
+            ElMessage.warning('请勾选需要下载的文件')
+        } else {
+            for (let i = 0; i < checkList.value.length; i++) {
+                setTimeout(() => {
+                    window.open(localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + fileList.value[checkList.value[i]].filepath)
+                }, 200);
+            }
 
         }
     } else if (index === 2) {
-        ElMessage.success("删除")
+        if (checkList.value.length === 0) {
+            ElMessage.warning('请勾选需要删除的文件')
+        } else {
+            outerVisible.value = true
+        }
     } else if (index === 3) {
         ElMessage.success("移动")
     } else if (index === 4) {
-        ElMessage.success("重命名")
+        if (checkList.value.length != 1) {
+            ElMessage.warning('只能同时修改一个文件名')
+        } else {
+            currentFilename.value = fileList.value[checkList.value[0]].filename
+            dialogFormVisible.value = true
+            open(fileList.value[checkList.value[0]].filepath)
+            showDetail.value = false
+        }
     } else if (index === 5) {
         ElMessage.success("分享")
     }
@@ -161,7 +236,7 @@ const selectCover = (fileName, filePath) => {
         return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Archive%20Folder.png'
     } else if (fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') ||
         fileName.endsWith('.gif') || fileName.endsWith('.bmp')) {
-        return 'https://peirong.co:8443/EasyDrive/file/getImage?owner=' + localStorage.getItem('id') + '&path=' + filePath
+        return localServer + '/file/getImage?owner=' + localStorage.getItem('id') + '&path=' + filePath
     } else if (fileName.endsWith('.mp4') || fileName.endsWith('.MP4') || fileName.endsWith('.avi') || fileName.endsWith('.mkv') ||
         fileName.endsWith('.flv') || fileName.endsWith('.mov') || fileName.endsWith('.mp3') ||
         fileName.endsWith('.wav') || fileName.endsWith('.FLAC') || fileName.endsWith('.aac')) {
@@ -209,7 +284,6 @@ const beforeUpload = () => {
 }
 
 </script>
-
 
 <style scoped>
 .el-header {
@@ -260,7 +334,7 @@ const beforeUpload = () => {
 .el-card {
     cursor: pointer;
     width: 150px;
-    height: 130px;
+    height: 135px;
     font-weight: bold;
     float: left;
     margin-right: 15px;
@@ -274,8 +348,8 @@ const beforeUpload = () => {
 }
 
 .elcard-font {
-    display: block;
     font-size: 10px;
+    padding: 4px;
 }
 
 .image {
@@ -304,5 +378,20 @@ const beforeUpload = () => {
     transform: scale(1.15);
     transition: all 0.3s;
     cursor: pointer;
+}
+
+.dialog-display {
+    width: 100%;
+    height: 70vh;
+    object-fit: contain;
+}
+
+.rename-button {
+    background-color: rgb(182, 255, 215);
+    border: 1px solid rgb(230, 230, 230);
+    color: #30cf79;
+    width: 100px;
+    height: 40px;
+    margin: 5px;
 }
 </style>
