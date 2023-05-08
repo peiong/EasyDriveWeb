@@ -65,6 +65,7 @@ const login = () => {
     }, () => {
       get('/api/user/me', (response) => {
         store.auth.user = response
+        // 保存用户信息到cookie
         localStorage.setItem("username",response.username)
         localStorage.setItem("email",response.email)
         localStorage.setItem("phone",response.phone)

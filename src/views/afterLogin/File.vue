@@ -2,10 +2,16 @@
     <div class="file-layout">
         <el-dialog v-model="centerDialogVisible" title="上传" width="50%" center>
             <el-upload class="upload-demo" drag :data="data" :show-file-list="false"
-                :action="'http://localhost:8080/file/upload'" :before-upload="beforeUpload" :on-success="onUploadSuccess">
+                :action="'https://peirong.co:8443/EasyDrive/file/upload'" :before-upload="beforeUpload" :on-success="onUploadSuccess">
                 <img style="width: 100px;" src="https://f005.backblazeb2.com/file/img-forWeb/uPic/Cloud2.png">
                 <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
+        </el-dialog>
+        <el-dialog v-model="showDetail" title="详情" width="70%" center top="5vh" destroy-on-close>
+            <img v-if="fileType == '.png'" :src="URL" style="width: 100%; height: 70vh;object-fit: contain;">
+            <video v-else-if="fileType == '.mp4'" :src="URL" style="width: 100%; height: 70vh;object-fit: contain;" controls
+                autoplay preload="auto"></video>
+            <audio v-else-if="fileType == '.mp3'" controls :src="URL" style="width: 100%; object-fit: contain;"></audio>
         </el-dialog>
         <el-container>
             <el-header>
@@ -39,12 +45,14 @@
             </el-header>
             <el-main v-if="refresh">
                 <el-checkbox-group v-model="checkList">
-                    <el-card v-for="(item, index) in fileList" :key="index" :span="3" :body-style="{ padding: '10px' }"
-                        @click="open">
+                    <el-card v-for="(item, index) in fileList" :key="index" :span="3" :body-style="{ padding: '10px' }">
                         <el-checkbox :label="item.filepath"
                             style="position: absolute; left: 2px; top: -7px;"><br></el-checkbox>
-                        <div>
-                            <img :src="selectCover(item.filename.toString(), item.filepath.toString())" class="image" />
+                        <div  @click="open(item.filepath)">
+                            <img v-if="!item.filename.toLowerCase().endsWith('.mp4')"
+                                :src="selectCover(item.filename.toString(), item.filepath.toString())" class="image" />
+                            <video v-else :src="videosrc(item.filepath)" class="image" preload="auto"
+                                style="object-fit: cover;"></video>
                         </div>
                         <div class="elcard-font">
                             <div>{{ item.filename.toString().length <= 10 ? item.filename :
@@ -54,10 +62,6 @@
                             <div class="elcard-font">{{ item.size }}</div>
                     </el-card>
                 </el-checkbox-group>
-                <div class="demo-image__preview">
-                    <el-image style="width: 100px; height: 100px" :src="url" :zoom-rate="1.2" :preview-src-list="srcList"
-                        :initial-index="4" fit="cover" />
-                </div>
             </el-main>
         </el-container>
     </div>
@@ -75,22 +79,37 @@ const data = ref({
     owner: localStorage.getItem('id'),
     path: path.value
 })
+const fileType = ref('')
+const URL = ref('')
 const centerDialogVisible = ref(false)
-
+const showDetail = ref(false)
 const fileList = ref([])
 const refresh = ref(true)
+const videosrc = (filepath) => {
+    return 'https://peirong.co:8443/EasyDrive/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath
+}
 
-const url = 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
-const srcList = [
-    'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
-    'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
-    'https://fuss10.elemecdn.com/0/6f/e35ff375812e6b0020b6b4e8f9583jpeg.jpeg',
-    'https://fuss10.elemecdn.com/9/bb/e27858e973f5d7d3904835f46abbdjpeg.jpeg',
-    'https://fuss10.elemecdn.com/d/e6/c4d93a3805b3ce3f323f7974e6f78jpeg.jpeg',
-    'https://fuss10.elemecdn.com/3/28/bbf893f792f03a54408b3b7a7ebf0jpeg.jpeg',
-    'https://fuss10.elemecdn.com/2/11/6535bcfb26e4c79b48ddde44f4b6fjpeg.jpeg',
-]
-
+const open = (filepath) => {
+    if (filepath.endsWith('.png') || filepath.endsWith('.jpg') || filepath.endsWith('.jpeg') || filepath.endsWith('.gif')) {
+        fileType.value = '.png'
+        URL.value = 'https://peirong.co:8443/EasyDrive/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath
+        showDetail.value = true
+    } else if (filepath.endsWith('.zip') || filepath.endsWith('.rar') || filepath.endsWith('.7z')) {
+        ElMessage.warning("无法在线预览压缩包，请下载查看")
+    } else if (filepath.endsWith('.mp4') || filepath.endsWith('.MP4')) {
+        fileType.value = '.mp4'
+        URL.value = 'https://peirong.co:8443/EasyDrive/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath
+        showDetail.value = true
+    } else if (filepath.endsWith('.mp3') || filepath.endsWith('.MP3')) {
+        fileType.value = '.mp3'
+        URL.value = 'https://peirong.co:8443/EasyDrive/file/getImage?owner=' + localStorage.getItem('id') + '&path=' + filepath
+        showDetail.value = true
+    } else if (filepath.endsWith('.pdf')) {
+        window.open('https://peirong.co:8443/EasyDrive/file/getPDF?owner=' + localStorage.getItem('id') + '&path=' + filepath)
+    } else if(filepath.endsWith('.docx') || filepath.endsWith('.doc') || filepath.endsWith('.ppt') || filepath.endsWith('.pptx') || filepath.endsWith('.xlsx')) {
+        window.open('https://view.xdocin.com/view?src='+ encodeURIComponent('https://peirong.co:8443/EasyDrive/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath))
+    }
+}
 
 const onUploadSuccess = (response) => {
     if (response.code == 200) {
@@ -116,7 +135,10 @@ const handleButtonClick = (index) => {
         centerDialogVisible.value = true
     } else if (index === 1) {
         for (let i = 0; i < checkList.value.length; i++) {
-            axios.get('/file/download?owner=' + localStorage.getItem('id') + '&path=' + checkList.value[i], { responseType: 'blob' })
+            setTimeout(() => {
+                window.open('https://peirong.co:8443/EasyDrive/file/download?owner=' + localStorage.getItem('id') + '&path=' + checkList.value[i])
+            }, 200);
+
         }
     } else if (index === 2) {
         ElMessage.success("删除")
@@ -139,8 +161,8 @@ const selectCover = (fileName, filePath) => {
         return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Archive%20Folder.png'
     } else if (fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') ||
         fileName.endsWith('.gif') || fileName.endsWith('.bmp')) {
-        return 'http://localhost:8080/file/getImage?owner=' + localStorage.getItem('id') + '&path=' + filePath
-    } else if (fileName.endsWith('.mp4') || fileName.endsWith('.avi') || fileName.endsWith('.mkv') ||
+        return 'https://peirong.co:8443/EasyDrive/file/getImage?owner=' + localStorage.getItem('id') + '&path=' + filePath
+    } else if (fileName.endsWith('.mp4') || fileName.endsWith('.MP4') || fileName.endsWith('.avi') || fileName.endsWith('.mkv') ||
         fileName.endsWith('.flv') || fileName.endsWith('.mov') || fileName.endsWith('.mp3') ||
         fileName.endsWith('.wav') || fileName.endsWith('.FLAC') || fileName.endsWith('.aac')) {
         return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/CircledPlay2.png'
@@ -156,6 +178,8 @@ const selectCover = (fileName, filePath) => {
         return ('https://f005.backblazeb2.com/file/img-forWeb/uPic/numbers.png')
     } else if (fileName.endsWith('.xls') || fileName.endsWith('.xlsx')) {
         return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Microsoft%20Excel%202019.png'
+    } else if (fileName.endsWith('.pdf')) {
+        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/PDF.png'
     } else {
         return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/File(3).png'
     }
@@ -188,19 +212,6 @@ const beforeUpload = () => {
 
 
 <style scoped>
-.demo-image__error .image-slot {
-    font-size: 30px;
-}
-
-.demo-image__error .image-slot .el-icon {
-    font-size: 30px;
-}
-
-.demo-image__error .el-image {
-    width: 100%;
-    height: 200px;
-}
-
 .el-header {
     height: 100%;
     min-width: 1024px;
@@ -209,7 +220,7 @@ const beforeUpload = () => {
 .el-main {
     height: 100%;
     min-width: 1024px;
-    border-right: 1px solid rgb(240, 240, 240);
+
 }
 
 .el-input {
