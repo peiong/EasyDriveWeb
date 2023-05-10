@@ -1,7 +1,8 @@
 <template>
     <div class="file-layout">
+
         <!--上传文件对话框-->
-        <el-dialog v-model="centerDialogVisible" title="上传" width="50%" center>
+        <el-dialog v-model="centerDialogVisible" title="上传文件" width="50%" center destroy-on-close>
             <el-upload class="upload-demo" drag :data="data" :show-file-list="false" :action="localServer + '/file/upload'"
                 :before-upload="beforeUpload" :on-success="onUploadSuccess">
                 <img style="width: 100px;" src="https://f005.backblazeb2.com/file/img-forWeb/uPic/Cloud2.png">
@@ -18,27 +19,45 @@
         </el-dialog>
 
         <!--修改文件名对话框-->
-        <el-dialog v-model="dialogFormVisible" title="修改文件名">
+        <el-dialog v-model="dialogFormVisible" title="修改文件名" width="40%" top="5vh" destroy-on-close>
             <img v-if="fileType == '.png'" :src="URL" class="dialog-display">
-            <video v-else-if="fileType == '.mp4'" :src="URL" class="dialog-display" controls></video>
+            <video v-else-if="fileType == '.mp4'" :src="URL" class="dialog-display" controls autoplay
+                preload="auto"></video>
             <audio v-else-if="fileType == '.mp3'" controls :src="URL" class="dialog-display"></audio>
-            <el-input style="width: 450px; height: 40px; margin: 10px; " v-model="form.rename"
-                :placeholder="'当前文件名：' + currentFilename"></el-input>
+            <el-input class="inputForRenameAndFolder" v-model="rename"
+                :placeholder="'当前文件名：' + currentFilename + '（名称不能包含 / ）'" />
             <br>
-            <el-button class="rename-button">确认</el-button>
+            <el-button class="rename-button">修改</el-button>
         </el-dialog>
 
         <!--删除文件对话框-->
-        <el-dialog v-model="outerVisible" title="确认删除该文件吗？" center >
+        <el-dialog v-model="outerVisible" width="30%" title="确认删除该文件吗？" center>
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="outerVisible = false">取消</el-button>
-                    <el-button type="primary" @click="remove">
-                        确认
-                    </el-button>
+                    <el-button type="primary" @click="remove">确认</el-button>
                 </div>
             </template>
         </el-dialog>
+
+        <!--新建文件夹对话框-->
+        <el-dialog v-model="newFolder" width="400px" title="新建文件夹" center>
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-input v-model="folderName" style="width: 350px;" placeholder="请输入文件夹名称：（名称不能包含 '/' ）" />
+                    <div style="margin: 15px;">
+                        <el-button type="danger" @click="newFolder = false">取消</el-button>
+                        <el-button type="primary" @click="ClickToFolder">新建</el-button>
+                    </div>
+                </div>
+            </template>
+        </el-dialog>
+
+        <!--移动文件对话框-->
+        <el-dialog v-model="moveFile" width="30%" title="移动文件" center></el-dialog>
+
+        <!--文件分享-->
+        <el-dialog v-model="shareFile" width="30%" title="分享文件" center></el-dialog>
 
         <el-container>
             <el-header>
@@ -53,7 +72,7 @@
                         </el-breadcrumb>
                     </div>
                     <div style="height: 53px; text-align: left;">
-                        <el-input @keyup.enter="search" v-model="search" class="primary" placeholder="搜索">
+                        <el-input @keyup.enter="search" v-model="inputSearch" class="primary" placeholder="搜索">
                             <template #prefix>
                                 <el-icon slot="prefix">
                                     <img style="width: 23px; cursor: pointer;" @click="search"
@@ -70,42 +89,61 @@
                     </div>
                 </div>
             </el-header>
-            <el-main v-if="refresh">
-                <el-checkbox-group v-model="checkList">
-                    <el-card v-for="(item, index) in fileList" :key="index" :span="3" :body-style="{ padding: '10px' }">
-                        <el-checkbox :label="index" style="position: absolute; left: 2px; top: -7px;"><br></el-checkbox>
-                        <div @click="open(item.filepath)">
-                            <img v-if="!item.filename.toLowerCase().endsWith('.mp4')"
-                                :src="selectCover(item.filename.toString(), item.filepath.toString())" class="image" />
-                            <video v-else :src="videosrc(item.filepath)" class="image" preload="auto"
-                                style="object-fit: cover;"></video>
-                        </div>
-                        <div class="elcard-font">
-                            <span>
-                                {{ item.filename.toString().length <= 10 ? item.filename :
-                                    item.filename.toString().substring(0, 7) + '...' +
-                                    item.filename.toString().substring(item.filename.lastIndexOf('.') + 1) }} </span>
-                        </div>
-                        <div class="elcard-font">
-                            <p>
-                                {{ item.size <= 1024 ? item.size + 'KB' : (item.size / 1024).toFixed(1) + 'MB' }}</p>
-                        </div>
-                    </el-card>
-                </el-checkbox-group>
+
+
+            <el-main>
+                <!-- <transition name="el-zoom-in-center"> -->
+                <el-collapse-transition>
+                    <div v-show="refresh">
+                        <el-checkbox-group v-model="checkList">
+                            <el-card v-for="(item, index) in fileList" :key="index" :span="3"
+                                :body-style="{ padding: '10px' }">
+                                <el-checkbox :label="index"
+                                    style="position: absolute; left: 2px; top: -7px;"><br></el-checkbox>
+                                <div @click="open(item.filepath)">
+                                    <img v-if="!item.filename.toLowerCase().endsWith('.mp4')"
+                                        :src="selectCover(item.filename.toString(), item.filepath.toString())"
+                                        class="image" />
+                                    <video v-else :src="videosrc(item.filepath)" class="image" preload="auto"
+                                        style="object-fit: cover;"></video>
+                                </div>
+                                <div class="elcard-font">
+                                    <span>
+                                        {{ item.filename.toString().length <= 10 ? item.filename.toString().replace("/","") :
+                                            item.filename.toString().substring(0, 7).replace("/","") + '...' +
+                                            item.filename.toString().substring(item.filename.lastIndexOf('.') + 1).replace("/","") }}
+                                            </span>
+                                </div>
+                                <div class="elcard-font">
+                                    <p v-if="!item.filename.endsWith('/')">
+                                        {{ item.size <= 1024 ? item.size + 'KB' : (item.size / 1024).toFixed(1) + 'MB'
+                                        }}</p>
+                                </div>
+                            </el-card>
+                        </el-checkbox-group>
+                    </div>
+                    <!-- </transition> -->
+                </el-collapse-transition>
             </el-main>
+
+
+            <el-footer style="width: 860px;">
+                <el-pagination style="display: flex; justify-content: center;" small background layout="prev, pager, next"
+                    :page-size="20" :total="total" @current-change="changePage" :current-page="currentPage.value" />
+            </el-footer>
         </el-container>
     </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
 import { localServer } from '@/net'
 
 const checkList = ref([])
 const title = ref("文件")
-const search = ref('')
+const inputSearch = ref('')
 const path = ref('/')
 const data = ref({
     owner: localStorage.getItem('id'),
@@ -113,23 +151,75 @@ const data = ref({
 })
 const fileType = ref('')
 const URL = ref('')
-
+/**当前文件名 */
+const currentFilename = ref('')
+/**重命名输入框 */
+const rename = ref('')
+const fileList = ref([])
+const folderName = ref('')
+const currentPage = ref(1) // 当前页
+const total = ref(0) // 总条数
 const outerVisible = ref(false)
-
+const newFolder = ref(false)
 const centerDialogVisible = ref(false)
 const dialogFormVisible = ref(false)
-
-const form = reactive({
-    rename: '',
-})
-const currentFilename = ref('')
 const showDetail = ref(false)
-const fileList = ref([])
-const refresh = ref(true)
+const refresh = ref(false)
+const shareFile = ref(false)
+const moveFile = ref(false)
+
+const search = () => {
+    refresh.value = false
+    setTimeout(() => {
+        axios.get(localServer + '/file/search?keyword=' + inputSearch.value + '&currentPage=' + 1 + '&pageSize=20&path=' + path.value)
+            .then(res => {
+                if (res.data) {
+                    fileList.value = res.data.data
+                    total.value = res.data.total
+
+                } else {
+                    ElMessage.error("搜索失败")
+                }
+                setTimeout(() => {
+                    refresh.value = true
+                }, 200)
+            })
+
+    }, 200)
+}
+search()
+
+
+const changFileList = () => {
+    axios.post('/file/listAll', {
+        path: path.value,
+        owner: localStorage.getItem('id')
+    }).then(res => {
+        fileList.value = res.data
+    })
+}
+
+
+const beforeUpload = () => {
+    data.value.path = path.value
+}
+
 const videosrc = (filepath) => {
     return localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath
 }
 
+/**按钮样式 */
+const buttons = ref([
+    { index: 1, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Upload.png" },
+    { index: 2, types: "primary-2nd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Below.png" },
+    { index: 3, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Close.png" },
+    { index: 4, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Drag.png" },
+    { index: 5, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Edit.png" },
+    { index: 6, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Share.png" },
+    { index: 7, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Add%20Folder.png" },
+])
+
+/**文件预览 */
 const open = (filepath) => {
     if (filepath.endsWith('.png') || filepath.endsWith('.jpg') || filepath.endsWith('.jpeg') || filepath.endsWith('.gif')) {
         fileType.value = '.png'
@@ -149,84 +239,14 @@ const open = (filepath) => {
         window.open(localServer + '/file/getPDF?owner=' + localStorage.getItem('id') + '&path=' + filepath)
     } else if (filepath.endsWith('.docx') || filepath.endsWith('.doc') || filepath.endsWith('.ppt') || filepath.endsWith('.pptx') || filepath.endsWith('.xlsx')) {
         window.open('http://view.xdocin.com/view?src=' + encodeURIComponent(localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath))
+    } else if (filepath.endsWith('/')) {
+        ElMessage
+        path.value = path.value + filepath
+        search()
     }
 }
 
-const onUploadSuccess = (response) => {
-    if (response.code == 200) {
-        ElMessage.success("上传成功")
-        centerDialogVisible.value = false
-        changFileList()
-    } else {
-        ElMessage.error("上传失败")
-    }
-}
-
-const remove = () => {
-    for (let i = 0; i < checkList.value.length; i++) {
-        setTimeout(() => {
-            axios.get(localServer + '/file/delete?owner=' + localStorage.getItem('id') + '&path=' + fileList.value[checkList.value[i]].filepath)
-                .then(res => {
-                    if (res.data) {
-                        if (i === checkList.value.length - 1) {
-                            ElMessage.success("删除成功")
-                            changFileList()
-                        }
-                    } else if (!res.data) {
-                        ElMessage.error("删除失败")
-                    }
-                })
-        }, 200);
-    }
-    outerVisible.value = false
-}
-
-const buttons = ref([
-    { index: 1, types: "primary-2nd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Plus2.png" },
-    { index: 2, types: "primary-2nd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Below.png" },
-    { index: 3, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Close.png" },
-    { index: 4, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Drag.png" },
-    { index: 5, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Edit.png" },
-    { index: 6, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Share.png" },
-])
-
-const handleButtonClick = (index) => {
-    if (index === 0) {
-        centerDialogVisible.value = true
-    } else if (index === 1) {
-        if (checkList.value.length === 0) {
-            ElMessage.warning('请勾选需要下载的文件')
-        } else {
-            for (let i = 0; i < checkList.value.length; i++) {
-                setTimeout(() => {
-                    window.open(localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + fileList.value[checkList.value[i]].filepath)
-                }, 200);
-            }
-
-        }
-    } else if (index === 2) {
-        if (checkList.value.length === 0) {
-            ElMessage.warning('请勾选需要删除的文件')
-        } else {
-            outerVisible.value = true
-        }
-    } else if (index === 3) {
-        ElMessage.success("移动")
-    } else if (index === 4) {
-        if (checkList.value.length != 1) {
-            ElMessage.warning('只能同时修改一个文件名')
-        } else {
-            currentFilename.value = fileList.value[checkList.value[0]].filename
-            dialogFormVisible.value = true
-            open(fileList.value[checkList.value[0]].filepath)
-            showDetail.value = false
-        }
-    } else if (index === 5) {
-        ElMessage.success("分享")
-    }
-}
-
-
+/**文件预览图 */
 const selectCover = (fileName, filePath) => {
     if (fileName.endsWith('.conf')) {
         return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Documents.png'
@@ -259,27 +279,125 @@ const selectCover = (fileName, filePath) => {
         return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/File(3).png'
     }
 }
-axios.post('/file/listAll', {
-    path: path.value,
-    owner: localStorage.getItem('id')
-}).then(res => {
-    fileList.value = res.data
-})
 
 
-const changFileList = () => {
-    axios.post('/file/listAll', {
-        path: path.value,
-        owner: localStorage.getItem('id')
-    }).then(res => {
-        fileList.value = res.data
-    })
+
+const changePage = (val) => {
+    refresh.value = false
+    setTimeout(() => {
+        axios.get(localServer + '/file/search?keyword=' + inputSearch.value + '&currentPage=' + val + '&pageSize=20&path=' + path.value)
+            .then(res => {
+                if (res.data) {
+                    fileList.value = res.data.data
+                    total.value = res.data.total
+
+                } else {
+                    ElMessage.error("搜索失败")
+                }
+                setTimeout(() => {
+                    refresh.value = true
+                }, 200)
+            })
+
+    }, 200)
 }
 
-const beforeUpload = () => {
-    data.value = {
-        path: path.value,
-        owner: localStorage.getItem("id")
+
+/**上传 */
+const onUploadSuccess = (response) => {
+    if (response.code == 200) {
+        ElMessage.success("上传成功")
+        //centerDialogVisible.value = false
+        search()
+    } else {
+        ElMessage.error("上传失败")
+    }
+}
+
+/**删除 */
+const remove = () => {
+    for (let i = 0; i < checkList.value.length; i++) {
+        setTimeout(() => {
+            axios.get(localServer + '/file/delete?owner=' + localStorage.getItem('id') + '&path=' + fileList.value[checkList.value[i]].filepath)
+                .then(res => {
+                    if (res.data) {
+                        if (i === checkList.value.length - 1) {
+                            ElMessage.success("删除成功")
+                            checkList.value = []
+                            search()
+                        }
+                    } else if (!res.data) {
+                        ElMessage.error("删除失败")
+                    }
+                })
+        }, 200);
+    }
+    outerVisible.value = false
+}
+
+/**新建文件夹 */
+const ClickToFolder = () => {
+    if (folderName.value === '') {
+        ElMessage.warning('请输入文件夹名称')
+    } else {
+        axios.get(localServer + '/file/folder?owner=' + localStorage.getItem('id') + '&path=' + path.value + '&filename=' + folderName.value + '/')
+            .then(res => {
+                if (res.data) {
+                    ElMessage.success("新建成功")
+                    centerDialogVisible.value = false
+                    search()
+                } else if (!res.data) {
+                    ElMessage.error("新建失败")
+                }
+            })
+    }
+}
+
+/**按钮事件绑定 */
+const handleButtonClick = (index) => {
+    if (index === 0) {
+        centerDialogVisible.value = true
+    } else if (index === 1) {
+        if (checkList.value.length === 0) {
+            ElMessage.warning('请勾选需要下载的文件')
+        } else {
+            for (let i = 0; i < checkList.value.length; i++) {
+                setTimeout(() => {
+                    window.open(localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + fileList.value[checkList.value[i]].filepath)
+                }, 200);
+            }
+            checkList.value = []
+
+        }
+    } else if (index === 2) {
+        if (checkList.value.length === 0) {
+            ElMessage.warning('请勾选需要删除的文件')
+        } else {
+            outerVisible.value = true
+        }
+    } else if (index === 3) {
+        if (checkList.value.length === 0) {
+            ElMessage.warning('请勾选需要移动的文件')
+        } else {
+            moveFile.value = true
+        }
+    } else if (index === 4) {
+        if (checkList.value.length != 1) {
+            ElMessage.warning('只能同时修改一个文件名')
+        } else {
+            currentFilename.value = fileList.value[checkList.value[0]].filename
+            dialogFormVisible.value = true
+            open(fileList.value[checkList.value[0]].filepath)
+            showDetail.value = false
+        }
+    } else if (index === 5) {
+        if (checkList.value.length === 0) {
+            ElMessage.warning('请勾选需要分享的文件')
+        } else {
+            shareFile.value = true
+        }
+    } else if (index === 6) {
+        newFolder.value = true
     }
 }
 
@@ -292,7 +410,7 @@ const beforeUpload = () => {
 }
 
 .el-main {
-    height: 100%;
+    height: 660px;
     min-width: 1024px;
 
 }
@@ -320,10 +438,9 @@ const beforeUpload = () => {
     border: 0 #ffffff;
     width: 30px;
     height: 30px;
-}
-
-.el-button--primary-3rd:hover {
-    background-color: #ffffff;
+    background-color: #fff;
+    --el-button-hover-bg-color: #ffffff;
+    --el-button-outline-color: #ffffff;
 }
 
 .head-title {
@@ -366,12 +483,24 @@ const beforeUpload = () => {
     border: 1px solid rgb(230, 230, 230);
     color: #30cf79;
     margin-bottom: 8px;
+    --el-button-hover-text-color: #30cf79;
+    --el-button-hover-border-color: 1px solid rgb(230, 230, 230);
+    --el-button-hover-bg-color: : #fff;
 }
 
 .preference-button:hover {
     background-color: rgb(182, 255, 215);
     border: 1px solid rgb(210, 210, 210);
     color: #30cf79;
+}
+
+.rename-button {
+    background-color: rgb(182, 255, 215);
+    border: 1px solid rgb(230, 230, 230);
+    color: #30cf79;
+    width: 100px;
+    height: 40px;
+    margin: 5px;
 }
 
 .image-effect:hover {
@@ -386,12 +515,13 @@ const beforeUpload = () => {
     object-fit: contain;
 }
 
-.rename-button {
-    background-color: rgb(182, 255, 215);
-    border: 1px solid rgb(230, 230, 230);
-    color: #30cf79;
-    width: 100px;
+.inputForRename {
+    width: 450px;
     height: 40px;
-    margin: 5px;
+    margin: 10px;
+}
+
+.dialog-footer button:first-child {
+    margin-right: 10px;
 }
 </style>

@@ -183,6 +183,9 @@ const activated = () => {
   border: 1px solid rgb(230, 230, 230);
   color: #30cf79;
   margin-bottom: 8px;
+  --el-button-hover-text-color: #30cf79;
+  --el-button-hover-border-color: 1px solid rgb(230, 230, 230);
+  --el-button-hover-bg-color:: #fff;
 }
 
 .preference-button:hover {
