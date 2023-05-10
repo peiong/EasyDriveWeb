@@ -17,6 +17,7 @@
                 preload="auto"></video>
             <audio v-else-if="fileType == '.mp3'" controls :src="URL" class="dialog-display"></audio>
         </el-dialog>
+        
         <!--修改文件名对话框-->
         <el-dialog v-model="dialogFormVisible" title="修改文件名" width="40%" top="5vh" destroy-on-close>
             <img v-if="fileType == '.png'" :src="URL" class="dialog-display">
