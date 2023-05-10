@@ -17,7 +17,6 @@
                 preload="auto"></video>
             <audio v-else-if="fileType == '.mp3'" controls :src="URL" class="dialog-display"></audio>
         </el-dialog>
-
         <!--修改文件名对话框-->
         <el-dialog v-model="dialogFormVisible" title="修改文件名" width="40%" top="5vh" destroy-on-close>
             <img v-if="fileType == '.png'" :src="URL" class="dialog-display">
@@ -109,10 +108,10 @@
                                 </div>
                                 <div class="elcard-font">
                                     <span>
-                                        {{ item.filename.toString().length <= 10 ? item.filename.toString().replace("/","") :
-                                            item.filename.toString().substring(0, 7).replace("/","") + '...' +
-                                            item.filename.toString().substring(item.filename.lastIndexOf('.') + 1).replace("/","") }}
-                                            </span>
+                                        {{ item.filename.toString().length <= 10 ? item.filename.toString().replace("/", "")
+                                            : item.filename.toString().substring(0, 7).replace("/", "") + '...' +
+                                            item.filename.toString().substring(item.filename.lastIndexOf('.') +
+                                                1).replace("/", "") }} </span>
                                 </div>
                                 <div class="elcard-font">
                                     <p v-if="!item.filename.endsWith('/')">
@@ -435,12 +434,12 @@ const handleButtonClick = (index) => {
 
 .el-button--primary-3rd {
     border-radius: 15px;
-    border: 0 #ffffff;
+    border: 0 #fff;
     width: 30px;
     height: 30px;
     background-color: #fff;
-    --el-button-hover-bg-color: #ffffff;
-    --el-button-outline-color: #ffffff;
+    --el-button-hover-bg-color: #fff;
+    --el-button-outline-color: #fff;
 }
 
 .head-title {
