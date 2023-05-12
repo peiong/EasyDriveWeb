@@ -165,15 +165,14 @@ const table = reactive({
     isCounting1: false
 })
 
-const UpdateUsename = () => {
-    post('/after/UpdateUsername', {
-        username: username.value
-    }, (message) => {
-        ElMessage.success(message)
-        localStorage.setItem("username", username.value)
-    }, (message) => {
-        ElMessage.warning(message)
-    })
+const onUploadSuccess = (response) => {
+    if (response.success) {
+        ElMessage.success("上传成功")
+        dialogAvatar.value = false
+        search()
+    } else {
+        ElMessage.error("上传失败")
+    }
 }
 
 const SendMessage = () => {
@@ -266,6 +265,17 @@ const UpdatePassword = () => {
             ElMessage.warning(response)
         })
     }
+}
+
+const UpdateUsename = () => {
+    post('/after/UpdateUsername', {
+        username: username.value
+    }, (message) => {
+        ElMessage.success(message)
+        localStorage.setItem("username", username.value)
+    }, (message) => {
+        ElMessage.warning(message)
+    })
 }
 
 </script>

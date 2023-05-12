@@ -47,7 +47,6 @@ import router from '@/router'
 import { useStore } from '@/stores'
 
 const username = ref(localStorage.getItem('username'))
-const text = ref('sdjbcskjcb')
 
 const store = useStore()
 const logout = () => {
