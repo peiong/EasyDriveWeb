@@ -61,6 +61,7 @@ import { post, get, nameReg, passwordReg, phoneReg, emailReg } from '@/net/index
 import router from '@/router/index.js'
 import axios from 'axios';
 import { User, Lock, Star, Message } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus';
 
 const form = reactive({
   account: '',
@@ -79,12 +80,12 @@ const table = reactive({
 const sendCodeToRegister = () => {
   if (!phoneReg.test(form.account) && !emailReg.test(form.account)) {
     ElMessage.warning('请输入正确的手机号码或邮箱')
-  } else {
-    axios.post('/before/sendMessageOrEmail', {
+  } else if (phoneReg.test(form.account)) {
+    post('/before/SendMessageToRegister', {
       account: form.account
-    }).then(response => {
-      if (response.data) {
-        ElMessage.success('发送成功')
+    },(response) => {
+      
+        ElMessage.success(response)
         table.countdown = 60;
         table.isCounting = true;
         const timer = setInterval(() => {
@@ -94,13 +95,25 @@ const sendCodeToRegister = () => {
             table.isCounting = false;
           }
         }, 1000)
-      } else if (!response.data) {
-        ElMessage.warning('账号已注册')
-      } else {
-        ElMessage.warning('发送失败')
-      }
-    }).catch(error => {
-      console.log(error)
+      }, (response) => {
+        ElMessage.warning(response)
+      })
+  } else if (emailReg.test(form.account)) {
+    post('/before/SendEmailToRegister', {
+      account: form.account
+    }, (response) => {
+      ElMessage.success(response)
+      table.countdown = 60;
+      table.isCounting = true;
+      const timer = setInterval(() => {
+        table.countdown--;
+        if (table.countdown === 0) {
+          clearInterval(timer);
+          table.isCounting = false;
+        }
+      }, 1000)
+    }, (response) => {
+      ElMessage.warning(response)
     })
   }
 }
@@ -121,21 +134,23 @@ const register = () => {
   } else if (!form.checked) {
     ElMessage.warning('请同意相关协议和政策')
   } else {
-    axios.get('/before/checkIfThereIsAUser' + '/' + form.username)
+    axios.get('/before/CheckIfThereIsAUser' + '/' + form.username)
       .then(response => {
         if (response.data) {
           ElMessage.warning('用户名已被占用')
         } else {
-          axios.post(`/before/register/${form.verify}/${form.account}`, form)
-            .then(response => {
-              if (response.data) {
-                ElMessage.success('注册成功，请登录')
-                router.push('/login')
-              } else {
-                ElMessage.error('信息有误，请重新输入')
-              }
-            })
-        }
+          post('/before/register',{
+            account: form.account,
+            verify: form.verify,
+            username: form.username,
+            password: form.password
+          }, (response) => {
+            ElMessage.success(response)
+            router.push('/')
+          }, (response) => {
+            ElMessage.warning(response)
+          })
+          }
       })
   }
 }

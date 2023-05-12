@@ -42,7 +42,7 @@
 
 <script setup>
 import { reactive } from 'vue';
-import { post, get } from '@/net'
+import { post, loginPost, get } from '@/net'
 import { User, Lock } from '@element-plus/icons-vue'
 import router from '@/router'
 import { useStore } from '@/stores'
@@ -58,7 +58,7 @@ const login = () => {
   if (!form.account || !form.password) {
     ElMessage.warning('请填写账号和密码')
   } else {
-    post('/login', {
+    loginPost('/login', {
       username: form.account,
       password: form.password,
       remember: true

@@ -17,7 +17,7 @@
                 preload="auto"></video>
             <audio v-else-if="fileType == '.mp3'" controls :src="URL" class="dialog-display"></audio>
         </el-dialog>
-        
+
         <!--修改文件名对话框-->
         <el-dialog v-model="dialogFormVisible" title="修改文件名" width="40%" top="5vh" destroy-on-close>
             <img v-if="fileType == '.png'" :src="URL" class="dialog-display">
@@ -89,10 +89,7 @@
                     </div>
                 </div>
             </el-header>
-
-
             <el-main>
-                <!-- <transition name="el-zoom-in-center"> -->
                 <el-collapse-transition>
                     <div v-show="refresh">
                         <el-checkbox-group v-model="checkList">
@@ -109,10 +106,10 @@
                                 </div>
                                 <div class="elcard-font">
                                     <span>
-                                        {{ item.filename.toString().length <= 10 ? item.filename.toString().replace("/", "")
-                                            : item.filename.toString().substring(0, 7).replace("/", "") + '...' +
-                                            item.filename.toString().substring(item.filename.lastIndexOf('.') +
-                                                1).replace("/", "") }} </span>
+                                        {{ item.filename.toString().length <= 10 ? item.filename.toString().replace("/", ""
+                                        ) : item.filename.toString().substring(0, 7).replace("/", "") + '...' +
+                                        item.filename.toString().substring(item.filename.lastIndexOf('.') +
+                                            1).replace("/", "") }} </span>
                                 </div>
                                 <div class="elcard-font">
                                     <p v-if="!item.filename.endsWith('/')">
@@ -122,11 +119,8 @@
                             </el-card>
                         </el-checkbox-group>
                     </div>
-                    <!-- </transition> -->
                 </el-collapse-transition>
             </el-main>
-
-
             <el-footer style="width: 860px;">
                 <el-pagination style="display: flex; justify-content: center;" small background layout="prev, pager, next"
                     :page-size="20" :total="total" @current-change="changePage" :current-page="currentPage.value" />
@@ -339,6 +333,8 @@ const remove = () => {
 const ClickToFolder = () => {
     if (folderName.value === '') {
         ElMessage.warning('请输入文件夹名称')
+    } else if (folderName.value.indexOf("/") !== -1) {
+        ElMessage.error("文件夹名称不能包含'/''")
     } else {
         axios.get(localServer + '/file/folder?owner=' + localStorage.getItem('id') + '&path=' + path.value + '&filename=' + folderName.value + '/')
             .then(res => {

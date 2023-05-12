@@ -46,10 +46,11 @@
 <script setup>
 
 import { reactive } from 'vue';
-import { post, passwordReg, phoneReg, emailReg } from '@/net'
+import { get, post, passwordReg, phoneReg, emailReg } from '@/net'
 import router from '@/router'
 import { User, Lock, Message } from '@element-plus/icons-vue'
 import axios from 'axios';
+import { ElMessage } from 'element-plus';
 
 const form = reactive({
   account: '',
@@ -66,28 +67,39 @@ const table = reactive({
 const sendCodeToRecover = () => {
   if (!phoneReg.test(form.account) && !emailReg.test(form.account)) {
     ElMessage.warning('请输入正确的手机号码或邮箱')
-  } else {
-    axios.post('/before/sendMessageOrEmail?recover=recover', {
+  } else if (phoneReg.test(form.account)) {
+    post('/before/SendMessageToRecover', {
       account: form.account
-    }).then(response => {
-      if (response.data) {
-        ElMessage.success('发送成功')
-        table.countdown = 60;
-        table.isCounting = true;
-        const timer = setInterval(() => {
-          table.countdown--;
-          if (table.countdown === 0) {
-            clearInterval(timer);
-            table.isCounting = false;
-          }
-        }, 1000)
-      } else if (!response.data) {
-        ElMessage.warning('账号未注册')
-      } else {
-        ElMessage.warning('发送失败')
-      }
-    }).catch(error => {
-      ElMessage.error(error)
+    }, (response) => {
+      ElMessage.success(response)
+      table.countdown = 60;
+      table.isCounting = true;
+      const timer = setInterval(() => {
+        table.countdown--;
+        if (table.countdown === 0) {
+          clearInterval(timer);
+          table.isCounting = false;
+        }
+      }, 1000)
+    }, (response) => {
+      ElMessage.warning(response)
+    })
+  } else if (emailReg.test(form.account)) {
+    post('/before/SendEmailToRecover', {
+      account: form.account
+    }, (response) => {
+      ElMessage.success(response)
+      table.countdown = 60;
+      table.isCounting = true;
+      const timer = setInterval(() => {
+        table.countdown--;
+        if (table.countdown === 0) {
+          clearInterval(timer);
+          table.isCounting = false;
+        }
+      }, 1000)
+    }, (response) => {
+      ElMessage.warning(response)
     })
   }
 }
@@ -102,18 +114,16 @@ const recover = () => {
   } else if (form.password !== form.password1) {
     ElMessage.warning('密码不一致')
   } else {
-    axios.post('/before/changePasswordToRecover/' + form.verify + '/' + form.account, form)
-      .then(response => {
-        if (response.data) {
-          ElMessage.success('修改成功，请登录')
-          router.push('/login')
-        } else {
-          ElMessage.warning('操作失败，请联系管理员')
-        }
-      })
-      .catch(error => {
-        ElMessage.error(error)
-      })
+    post('/before/ChangePasswordToRecover/', {
+      verify: form.verify,
+      account: form.account,
+      password: form.password
+    }, (response) => {
+      ElMessage.success(response)
+      router.push('/')
+    }, (response) => {
+      ElMessage.warning(response)
+    })
   }
 }
 </script>
@@ -122,6 +132,7 @@ const recover = () => {
 .el-container {
   max-height: 500px;
 }
+
 .el-main {
   height: 500px;
   max-width: 385px;

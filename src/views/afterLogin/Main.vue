@@ -12,7 +12,7 @@
             </div>
           </div>
           <el-menu-item v-for="item in items" :key="item.id" :index="item.router" v-model="item.active"
-            @click="onClick(item.router)" @mouseenter="onMouseEnter(item)" @mouseleave="onMouseLeave(item)">
+            @click="onClick(item.router)">
             <img class="menu-icon" :src="item.image">
             <span>&nbsp;{{ item.name }}</span>
           </el-menu-item>
@@ -72,29 +72,6 @@ const items = ref([
 const onClick = (path) => {
   router.push(path)
 }
-const onMouseEnter = (item) => {
-  item.$el.classList.add("is-hover");
-}
-const onMouseLeave = (item) => {
-  item.$el.classList.remove("is-hover");
-}
-const activated = () => {
-  let activeIndex = router.currentRoute.value.path;
-  this.$nextTick(() => {
-    this.$refs.menuItems.forEach(item => {
-      if (item.index === activeIndex) {
-        item.$el.classList.add("is-active");
-      }
-      else {
-        item.$el.classList.remove("is-active");
-      }
-      if (item.$el.classList.contains("is-hover")) {
-        item.$el.classList.remove("is-hover");
-        item.$el.classList.add("el-menu-item--hover");
-      }
-    });
-  });
-}
 
 </script>
 
@@ -104,7 +81,6 @@ const activated = () => {
   max-width: 33.5%;
   min-height: 630px;
 }
-
 .head-photo {
   max-width: 200px;
   height: 130px;
@@ -114,14 +90,12 @@ const activated = () => {
   justify-content: center;
   align-items: center;
 }
-
 .el-main {
   padding: 0;
   max-width: 1024px;
   height: 100vh;
   min-height: 650px;
 }
-
 .el-aside {
   position: relative;
   min-height: 650px;
@@ -130,7 +104,6 @@ const activated = () => {
   background-color: rgb(242, 242, 244);
   border-right: 1px solid rgb(242, 242, 244);
 }
-
 .el-menu {
   font-size: 22px;
   background-color: rgb(242, 242, 244);
@@ -138,31 +111,25 @@ const activated = () => {
   height: 100%;
   padding: 0;
 }
-
 .menu-icon {
   /**图标大小 */
   width: 25px;
 }
-
 .el-menu-item.is-active {
   color: rgb(11, 12, 16);
   background-color: #30cf79;
 }
-
 .el-menu .el-menu-item:hover {
   background-color: rgb(231, 231, 231);
 }
-
 .el-menu .el-menu-item:focus {
   background-color: #30cf79;
 }
-
 .el-menu .el-menu-item {
   text-align: left;
   height: 70px;
   font-weight: bolder;
 }
-
 .bottom-menu {
   text-align: center;
   position: absolute;
@@ -170,14 +137,12 @@ const activated = () => {
   height: 90px;
   width: 100%;
 }
-
 .el-avatar {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
 }
-
 .preference-button {
   background-color: rgb(182, 255, 215);
   border: 1px solid rgb(230, 230, 230);
@@ -185,13 +150,11 @@ const activated = () => {
   margin-bottom: 8px;
   --el-button-hover-text-color: #30cf79;
   --el-button-hover-border-color: 1px solid rgb(230, 230, 230);
-  --el-button-hover-bg-color:: #fff;
+  --el-button-hover-bg-color: rgb(182, 255, 215);
 }
-
 .preference-button:hover {
   background-color: rgb(182, 255, 215);
   border: 1px solid rgb(210, 210, 210);
   color: #30cf79;
-
 }
 </style>

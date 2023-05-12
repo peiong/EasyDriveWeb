@@ -14,6 +14,17 @@ const localServer = 'http://localhost:8080'
 
 function post(url, data, success, failure = defaultFailure, error = defaultError) {
     axios.post(url, data, {
+        withCredentials: true
+    }).then(({data}) => {
+        if(data.success)
+            success(data.message, data.status)
+        else
+            failure(data.message, data.status)
+    }).catch(error)
+}
+
+function loginPost(url, data, success, failure = defaultFailure, error = defaultError) {
+    axios.post(url, data, {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
@@ -37,4 +48,4 @@ function get(url, success, failure = defaultFailure, error = defaultError) {
     }).catch(error)
 }
 
-export {get, post, nameReg, phoneReg, emailReg, passwordReg, remoteServer, localServer}
+export {get, post, loginPost, nameReg, phoneReg, emailReg, passwordReg, remoteServer, localServer}
