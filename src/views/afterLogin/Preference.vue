@@ -30,7 +30,7 @@
                         }}</a>
                         <el-dialog v-model="dialogPhone" title="修改账号" center width="410px" :before-close="handleClose">
                             <div style="text-align: left;">
-                                <p>您当前的手机号码为：{{ phone == "null" ? "空，请绑定" : phone }}</p>
+                                <p>您当前的手机号码为{{ phone == "null" ? "空，请绑定" : " " + phone }}</p>
                                 <el-input class="dialog-input" v-model="PhoneWaitToUpdate" placeholder="请输入需要绑定的手机号：">
                                     <template #prefix>
                                         <el-icon slot="prefix">
@@ -65,7 +65,7 @@
                         }}</a>
                         <el-dialog v-model="dialogEmail" title="修改邮箱" width="410px" center :before-close="handleClose">
                             <div style="text-align: left;">
-                                <p>您当前的邮箱为{{ email == "null" ? "空，请绑定" : email }}</p>
+                                <p>您当前的邮箱为{{ email == "null" ? "空，请绑定" : " " + email }}</p>
                                 <el-input v-model="EmailWaitToUpdate" class="dialog-input" placeholder="请输入需要绑定的邮箱：">
                                     <template #prefix>
                                         <el-icon slot="prefix">

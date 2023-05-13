@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useStore } from '@/stores'
 import '../style.css'
 
 import main from '@/views/afterLogin/Main.vue'
@@ -10,7 +9,8 @@ import completed from '@/views/afterLogin/Completed.vue'
 import scan from '@/views/afterLogin/Scan.vue'
 import trash from '@/views/afterLogin/Trash.vue'
 import preference from '@/views/afterLogin/Preference.vue'
-
+import axios from 'axios'
+import { ElMessage } from 'element-plus'
 
 const router = createRouter(
     {
@@ -71,17 +71,32 @@ const router = createRouter(
     }
 )
 
+
+// 全局路由前置守卫
+// 检查session判断是否登录，并传回登录的类型（用户or管理员）
+// 未登录时访问主页，跳转至登录页面
+// 已登录时访问登录页面，跳转至主页
 router.beforeEach((to, from, next) => {
-    const store = useStore()
-    if (store.auth.user != null && to.name.startsWith('before')) {
-        next('/main')
-    } else if (store.auth.user == null && to.fullPath.startsWith('/main')) {
-        next('/')
-    } else if (to.matched.length === 0) {
-        next('/main')
-    } else {
-        next()
-    } 
+    axios.get('/check/user2')
+        .then(res => {
+            if (res.data.msg == 'fail' && to.name.startsWith('after')) {
+                next('/login')
+            } else if (res.data.msg == 'success' && to.name.startsWith('before')) {
+                next('/main')
+            } else {
+                axios.get('/check/user')
+                .then(res => {
+                    if (res.data.username != null && to.name.startsWith('before')) {
+                        next('/main')
+                    } else if (res.data.username == null && to.name.startsWith('after')) {
+                        next('/login')
+                    }
+                })
+                next()
+            }
+        }).catch(err => {
+            ElMessage.error("服务器无响应，请联系管理员")
+        })
 })
 
 export default router

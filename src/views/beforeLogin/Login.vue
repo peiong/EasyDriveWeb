@@ -42,12 +42,10 @@
 
 <script setup>
 import { reactive } from 'vue';
-import { post, loginPost, get } from '@/net'
+import { loginPost } from '@/net'
 import { User, Lock } from '@element-plus/icons-vue'
 import router from '@/router'
-import { useStore } from '@/stores'
-
-const store = useStore()
+import { ElMessage } from 'element-plus';
 
 const form = reactive({
   account: '',
@@ -62,19 +60,8 @@ const login = () => {
       username: form.account,
       password: form.password,
       remember: true
-    }, () => {
-      get('/api/user/me', (response) => {
-        store.auth.user = response
-        // 保存用户信息到cookie
-        localStorage.setItem("username",response.username)
-        localStorage.setItem("email",response.email)
-        localStorage.setItem("phone",response.phone)
-        localStorage.setItem("avatar",response.avatar)
-        localStorage.setItem("id",response.id)
-        router.go('/main')
-      }, () => {
-        store.auth.user = null
-      })
+    }, (response) => {
+      router.go('/main')
     })
   }
 }

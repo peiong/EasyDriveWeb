@@ -44,16 +44,12 @@
 import { get } from '@/net'
 import { ref } from 'vue'
 import router from '@/router'
-import { useStore } from '@/stores'
 
-const username = ref(localStorage.getItem('username'))
+//const username = ref(localStorage.getItem('username'))
 
-const store = useStore()
 const logout = () => {
   get('/logout', () => {
-    store.auth.user = null
-    localStorage.clear()
-    router.go('/login')
+    router.push('/login')
   })
 }
 
