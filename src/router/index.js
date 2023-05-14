@@ -71,32 +71,21 @@ const router = createRouter(
     }
 )
 
-
-// 全局路由前置守卫
-// 检查session判断是否登录，并传回登录的类型（用户or管理员）
-// 未登录时访问主页，跳转至登录页面
-// 已登录时访问登录页面，跳转至主页
 router.beforeEach((to, from, next) => {
-    axios.get('/check/user2')
+    axios.get('/check/user')
         .then(res => {
             if (res.data.msg == 'fail' && to.name.startsWith('after')) {
                 next('/login')
             } else if (res.data.msg == 'success' && to.name.startsWith('before')) {
-                next('/main')
-            } else {
-                axios.get('/check/user')
-                .then(res => {
-                    if (res.data.username != null && to.name.startsWith('before')) {
-                        next('/main')
-                    } else if (res.data.username == null && to.name.startsWith('after')) {
-                        next('/login')
-                    }
-                })
+                next('/main/file')
+            } else { 
                 next()
             }
         }).catch(err => {
-            ElMessage.error("服务器无响应，请联系管理员")
+            ElMessage.error("404，页面未找到")
+            next('/login')
         })
+    
 })
 
 export default router

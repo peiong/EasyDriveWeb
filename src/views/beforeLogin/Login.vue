@@ -2,7 +2,8 @@
   <el-container @keyup.enter="login">
     <el-main>
       <div class="logo">
-        <img style="width: 55px; vertical-align: middle;" src='https://f005.backblazeb2.com/file/img-forWeb/uPic/Cloud2.png'>
+        <img style="width: 55px; vertical-align: middle;"
+          src='https://f005.backblazeb2.com/file/img-forWeb/uPic/Cloud2.png'>
         <div style='display: inline;'> <i slot='suffix'> EasyDrive</i></div>
       </div>
       <h1 style="margin-bottom: 15px;" class='login-title'>登录</h1>
@@ -46,6 +47,7 @@ import { loginPost } from '@/net'
 import { User, Lock } from '@element-plus/icons-vue'
 import router from '@/router'
 import { ElMessage } from 'element-plus';
+import axios from 'axios';
 
 const form = reactive({
   account: '',
@@ -60,9 +62,9 @@ const login = () => {
       username: form.account,
       password: form.password,
       remember: true
-    }, (response) => {
+    }, () => {
       router.go('/main')
-    })
+      })
   }
 }
 
