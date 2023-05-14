@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import '../style.css'
 
-import main from '@/views/afterLogin/Main.vue'
-import file from '@/views/afterLogin/File.vue'
-import uploading from '@/views/afterLogin/UpLoading.vue'
-import downloading from '@/views/afterLogin/Downloading.vue'
-import completed from '@/views/afterLogin/Completed.vue'
-import scan from '@/views/afterLogin/Scan.vue'
-import trash from '@/views/afterLogin/Trash.vue'
-import preference from '@/views/afterLogin/Preference.vue'
+import main from '@/views/AfterLogin/Main.vue'
+import file from '@/views/AfterLogin/File.vue'
+import uploading from '@/views/AfterLogin/UpLoading.vue'
+import downloading from '@/views/AfterLogin/Downloading.vue'
+import completed from '@/views/AfterLogin/Completed.vue'
+import scan from '@/views/AfterLogin/Scan.vue'
+import trash from '@/views/AfterLogin/Trash.vue'
+import preference from '@/views/AfterLogin/Preference.vue'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
@@ -21,9 +21,9 @@ const router = createRouter(
                 name: 'before',
                 redirect: '/login',
                 children: [
-                    { path: 'login', name: 'before-login', component: () => import('@/views/beforeLogin/Login.vue') },
-                    { path: 'register', name: 'before-register', component: () => import('@/views/beforeLogin/Register.vue') },
-                    { path: 'recover', name: 'before-recover', component: () => import('@/views/beforeLogin/Recover.vue') }
+                    { path: 'login', name: 'before-login', component: () => import('@/views/BeforeLogin/Login.vue') },
+                    { path: 'register', name: 'before-register', component: () => import('@/views/BeforeLogin/Register.vue') },
+                    { path: 'recover', name: 'before-recover', component: () => import('@/views/BeforeLogin/Recover.vue') }
                 ]
             },
             {

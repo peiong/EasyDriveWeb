@@ -197,17 +197,16 @@ const UpdatePhone = () => {
     post('/after/UpdatePhone', {
         phone: PhoneWaitToUpdate.value,
         code: CodeFromPhone.value
-    }, (message) => {
-        ElMessage.success(message)
+    }, (response) => {
+        ElMessage.success(response)
         localStorage.setItem("phone", PhoneWaitToUpdate.value)
         dialogPhone.value = false
         get('/logout', () => {
-            store.auth.user = null
             localStorage.clear()
             router.push('/login')
         })
-    }, (message) => {
-        ElMessage.warning(message)
+    }, (response) => {
+        ElMessage.warning(response)
     })
 }
 
@@ -233,17 +232,16 @@ const UpdateEmail = () => {
     post('/after/UpdateEmail', {
         email: EmailWaitToUpdate.value,
         code: CodeFromEmail.value
-    }, (message) => {
-        ElMessage.success(message)
+    }, (response) => {
+        ElMessage.success(response)
         localStorage.setItem("email", EmailWaitToUpdate.value)
         dialogEmail.value = false
         get('/logout', () => {
-            store.auth.user = null
             localStorage.clear()
             router.push('/login')
         })
-    }, (message) => {
-        ElMessage.warning(message)
+    }, (response) => {
+        ElMessage.warning(response)
     })
 }
 
@@ -257,9 +255,8 @@ const UpdatePassword = () => {
         }, (response) => {
             ElMessage.success(response)
             get('/logout', () => {
-                store.auth.user = null
                 localStorage.clear()
-                router.go('/login')
+                router.push('/login')
             })
         }, (response) => {
             ElMessage.warning(response)

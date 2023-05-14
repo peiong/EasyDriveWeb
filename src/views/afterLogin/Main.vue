@@ -45,7 +45,7 @@ import { get } from '@/net'
 import { ref } from 'vue'
 import router from '@/router'
 
-//const username = ref(localStorage.getItem('username'))
+const username = ref(localStorage.getItem('username'))
 
 const logout = () => {
   get('/logout', () => {
@@ -58,10 +58,10 @@ const size = ref(50)
 const items = ref([
   { id: 1, name: "全部文件", image: "https://api.iconify.design/ic:round-folder-open.svg", router: "/main/file" },
   { id: 2, name: "正在上传", image: "https://api.iconify.design/ic:round-upload.svg", router: "/main/uploading" },
-  { id: 3, name: "正在下载", image: "https://api.iconify.design/ic:round-download.svg", router: "/main/downloading" },
-  { id: 4, name: "传输完成", image: "https://api.iconify.design/ic:round-download-done.svg", router: "/main/completed" },
-  { id: 5, name: "重复文件", image: "https://api.iconify.design/ic:round-search.svg", router: "/main/scan" },
-  { id: 6, name: "回收站", image: "https://api.iconify.design/ic:round-delete.svg", router: "/main/trash" }
+  //{ id: 3, name: "正在下载", image: "https://api.iconify.design/ic:round-download.svg", router: "/main/downloading" },
+  { id: 3, name: "传输完成", image: "https://api.iconify.design/ic:round-download-done.svg", router: "/main/completed" },
+  { id: 4, name: "重复文件", image: "https://api.iconify.design/ic:round-search.svg", router: "/main/scan" },
+  { id: 5, name: "回收站", image: "https://api.iconify.design/ic:round-delete.svg", router: "/main/trash" }
 ])
 
 const onClick = (path) => {

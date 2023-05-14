@@ -63,8 +63,14 @@ const login = () => {
       password: form.password,
       remember: true
     }, () => {
-      router.go('/main')
+      axios.get('/check/user').then(res => {
+        localStorage.setItem("username", res.data.username)
+        localStorage.setItem("phone", res.data.phone)
+        localStorage.setItem("email", res.data.email)
+        localStorage.setItem("avatar", res.data.avatar)
+        router.go('/main')
       })
+    })
   }
 }
 
