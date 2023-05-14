@@ -31,7 +31,7 @@
                         <el-dialog v-model="dialogPhone" title="修改账号" center width="410px" :before-close="handleClose">
                             <div style="text-align: left;">
                                 <p>您当前的手机号码为{{ phone == "null" ? "空，请绑定" : " " + phone }}</p>
-                                <el-input class="dialog-input" v-model="PhoneWaitToUpdate" placeholder="请输入需要绑定的手机号：">
+                                <el-input class="dialog-input" :disabled="DisabledPhone" v-model="PhoneWaitToUpdate" placeholder="请输入需要绑定的手机号：">
                                     <template #prefix>
                                         <el-icon slot="prefix">
                                             <User />
@@ -66,7 +66,7 @@
                         <el-dialog v-model="dialogEmail" title="修改邮箱" width="410px" center :before-close="handleClose">
                             <div style="text-align: left;">
                                 <p>您当前的邮箱为{{ email == "null" ? "空，请绑定" : " " + email }}</p>
-                                <el-input v-model="EmailWaitToUpdate" class="dialog-input" placeholder="请输入需要绑定的邮箱：">
+                                <el-input v-model="EmailWaitToUpdate" :disabled="DisabledEmail" class="dialog-input" placeholder="请输入需要绑定的邮箱：">
                                     <template #prefix>
                                         <el-icon slot="prefix">
                                             <User />
@@ -131,7 +131,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { localServer, post, get } from '@/net'
+import { localServer, post, get, phoneReg, emailReg, passwordReg, nameReg } from '@/net'
 import { ElMessage } from 'element-plus';
 import { User, Lock, Message } from '@element-plus/icons-vue'
 import router from '@/router'
@@ -151,6 +151,9 @@ const dialogPhone = ref(false)
 const dialogPassword = ref(false)
 const dialogEmail = ref(false)
 const dialogAvatar = ref(false)
+
+const DisabledPhone = ref(false)
+const DisabledEmail = ref(false)
 
 const inputs = ref([
     { index: 1, value: '', placeholder: '请输入旧密码' },
@@ -176,10 +179,14 @@ const onUploadSuccess = (response) => {
 }
 
 const SendMessage = () => {
-    post('/after/SendMessage', {
+    if (!phoneReg.test(PhoneWaitToUpdate.value)) {
+        ElMessage.warning("手机号码格式有误")
+    } else {
+        post('/after/SendMessage', {
         account: PhoneWaitToUpdate.value
     }, (response) => {
         ElMessage.success(response)
+        DisabledPhone.value = true;
         table.countdown = 60;
         table.isCounting = true;
         const timer = setInterval(() => {
@@ -192,6 +199,7 @@ const SendMessage = () => {
     }, (response) => {
         ElMessage.warning(response)
     })
+    }
 }
 const UpdatePhone = () => {
     post('/after/UpdatePhone', {
@@ -211,10 +219,14 @@ const UpdatePhone = () => {
 }
 
 const SendEmail = () => {
-    post('/after/SendEmail', {
+    if (!emailReg.test(EmailWaitToUpdate.value)) {
+        ElMessage.warning("邮箱格式有误")
+    } else {
+        post('/after/SendEmail', {
         account: EmailWaitToUpdate.value
     }, (response) => {
-        ElMessage.success(response)
+        ElMessage.success(response);
+        DisabledEmail.value = true;
         table.countdown1 = 60;
         table.isCounting1 = true;
         const timer = setInterval(() => {
@@ -227,15 +239,16 @@ const SendEmail = () => {
     }, (response) => {
         ElMessage.warning(response)
     })
+    }
 }
 const UpdateEmail = () => {
     post('/after/UpdateEmail', {
         email: EmailWaitToUpdate.value,
         code: CodeFromEmail.value
     }, (response) => {
-        ElMessage.success(response)
-        localStorage.setItem("email", EmailWaitToUpdate.value)
-        dialogEmail.value = false
+        ElMessage.success(response);
+        localStorage.setItem("email", EmailWaitToUpdate.value);
+        dialogEmail.value = false;
         get('/logout', () => {
             localStorage.clear()
             router.push('/login')
@@ -248,6 +261,8 @@ const UpdateEmail = () => {
 const UpdatePassword = () => {
     if (inputs.value[1].value != inputs.value[2].value) {
         ElMessage.warning('两次输入的密码不一致')
+    } else if (!passwordReg.test(inputs.value[1].value)) {
+        ElMessage.warning('密码需包含大小写字母数字和特殊符号')
     } else {
         post('/after/UpdatePassword', {
             oldPassword: inputs.value[0].value,
@@ -265,7 +280,10 @@ const UpdatePassword = () => {
 }
 
 const UpdateUsename = () => {
-    post('/after/UpdateUsername', {
+    if (!nameReg.test(username.value)) {
+        ElMessage.warning('用户名限定长度为4-16个只能包含中文、英文、数字、下划线和减号的字符')
+    } else {
+        post('/after/UpdateUsername', {
         username: username.value
     }, (message) => {
         ElMessage.success(message)
@@ -273,6 +291,7 @@ const UpdateUsename = () => {
     }, (message) => {
         ElMessage.warning(message)
     })
+    }
 }
 
 </script>

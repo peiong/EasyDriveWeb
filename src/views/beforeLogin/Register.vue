@@ -120,7 +120,7 @@ const sendCodeToRegister = () => {
 
 const register = () => {
   if (!phoneReg.test(form.account) && !emailReg.test(form.account)) {
-    ElMessage.warning('请输入正确的手机号码或邮箱')
+    ElMessage.warning('手机号码或邮箱或格式有误')
   } else if (!form.verify) {
     ElMessage.warning('请输入验证码')
   } else if (!form.username) {
