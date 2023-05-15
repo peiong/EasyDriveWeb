@@ -61,7 +61,6 @@ const login = () => {
     loginPost('/login', {
       username: form.account,
       password: form.password,
-      remember: true
     }, () => {
       axios.get('/check/user').then(res => {
         localStorage.setItem("username", res.data.username)

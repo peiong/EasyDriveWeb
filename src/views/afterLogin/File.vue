@@ -2,8 +2,8 @@
     <div class="file-layout">
 
         <!--上传文件对话框-->
-        <el-dialog v-model="centerDialogVisible" title="上传文件" width="50%" center destroy-on-close>
-            <el-upload class="upload-demo" drag :data="data" :show-file-list="false" :action="localServer + '/file/upload'"
+        <el-dialog v-model="UploadDialog" title="上传文件" width="50%" center destroy-on-close>
+            <el-upload class="upload-demo" drag :show-file-list="false" :action="localServer + '/file/upload'"
                 :before-upload="beforeUpload" :on-success="onUploadSuccess">
                 <img style="width: 100px;" src="https://f005.backblazeb2.com/file/img-forWeb/uPic/Cloud2.png">
                 <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -11,42 +11,41 @@
         </el-dialog>
 
         <!--文件详情对话框-->
-        <el-dialog v-model="showDetail" title="文件详情" width="70%" center top="5vh" destroy-on-close>
-            <img v-if="fileType == '.png'" :src="URL" class="dialog-display">
+        <el-dialog v-model="ShowDetailDialog" title="文件详情" width="50%" top="5vh" destroy-on-close>
+            <img style="height: 450px; object-fit: contain;" v-if="fileType == '.png'" :src="URL" class="dialog-display">
             <video v-else-if="fileType == '.mp4'" :src="URL" class="dialog-display" controls autoplay
                 preload="auto"></video>
             <audio v-else-if="fileType == '.mp3'" controls :src="URL" class="dialog-display"></audio>
         </el-dialog>
 
         <!--修改文件名对话框-->
-        <el-dialog v-model="dialogFormVisible" title="修改文件名" width="40%" top="5vh" destroy-on-close>
-            <img v-if="fileType == '.png'" :src="URL" class="dialog-display">
+        <el-dialog v-model="RenameDialog" title="修改文件名" height="50%" width="40%" top="5vh" destroy-on-close>
+            <p>{{ currentFilename }}</p>
+            <el-input class="inputForRenameAndFolder" v-model="InputWaitToRename" :placeholder="'重命名：' + '（名称不能包含 / ）'" />
+            <el-button class="rename-button" @click="rename">修改</el-button>
+            <img style="height: 400px; object-fit: contain;" v-if="fileType == '.png'" :src="URL" class="dialog-display">
             <video v-else-if="fileType == '.mp4'" :src="URL" class="dialog-display" controls autoplay
                 preload="auto"></video>
             <audio v-else-if="fileType == '.mp3'" controls :src="URL" class="dialog-display"></audio>
-            <el-input class="inputForRenameAndFolder" v-model="rename"
-                :placeholder="'当前文件名：' + currentFilename + '（名称不能包含 / ）'" />
-            <br>
-            <el-button class="rename-button">修改</el-button>
         </el-dialog>
 
         <!--删除文件对话框-->
-        <el-dialog v-model="outerVisible" width="30%" title="确认删除该文件吗？" center>
+        <el-dialog v-model="RemoveDialog" width="30%" title="确认删除该文件吗？" center>
             <template #footer>
                 <div class="dialog-footer">
-                    <el-button @click="outerVisible = false">取消</el-button>
+                    <el-button @click="RemoveDialog = false">取消</el-button>
                     <el-button type="primary" @click="remove">确认</el-button>
                 </div>
             </template>
         </el-dialog>
 
         <!--新建文件夹对话框-->
-        <el-dialog v-model="newFolder" width="400px" title="新建文件夹" center>
+        <el-dialog v-model="NewFolder" width="400px" title="新建文件夹" center>
             <template #footer>
                 <div class="dialog-footer">
                     <el-input v-model="folderName" style="width: 350px;" placeholder="请输入文件夹名称：（名称不能包含 '/' ）" />
                     <div style="margin: 15px;">
-                        <el-button type="danger" @click="newFolder = false">取消</el-button>
+                        <el-button type="danger" @click="NewFolder = false">取消</el-button>
                         <el-button type="primary" @click="ClickToFolder">新建</el-button>
                     </div>
                 </div>
@@ -54,10 +53,10 @@
         </el-dialog>
 
         <!--移动文件对话框-->
-        <el-dialog v-model="moveFile" width="30%" title="移动文件" center></el-dialog>
+        <el-dialog v-model="MoveDialog" width="30%" title="移动文件" center></el-dialog>
 
         <!--文件分享-->
-        <el-dialog v-model="shareFile" width="30%" title="分享文件" center></el-dialog>
+        <el-dialog v-model="ShareDiglog" width="30%" title="分享文件" center></el-dialog>
 
         <el-container>
             <el-header>
@@ -113,8 +112,8 @@
                                 </div>
                                 <div class="elcard-font">
                                     <p v-if="!item.filename.endsWith('/')">
-                                        {{ item.size <= 1024 ? item.size + 'KB' : (item.size / 1024).toFixed(1) + 'MB'
-                                        }}</p>
+                                        {{ item.filesize <= 1024 ? item.filesize + 'KB' : (item.filesize / 1000).toFixed(1)
+                                            + 'MB' }}</p>
                                 </div>
                             </el-card>
                         </el-checkbox-group>
@@ -133,44 +132,45 @@
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
-import { localServer } from '@/net'
+import { localServer, post } from '@/net'
 
 const checkList = ref([])
 const title = ref("文件")
 const inputSearch = ref('')
+
 const path = ref('/')
-const data = ref({
-    owner: localStorage.getItem('id'),
-    path: path.value
-})
+
+
 const fileType = ref('')
 const URL = ref('')
 /**当前文件名 */
 const currentFilename = ref('')
 /**重命名输入框 */
-const rename = ref('')
+const InputWaitToRename = ref('')
 const fileList = ref([])
 const folderName = ref('')
+
 const currentPage = ref(1) // 当前页
 const total = ref(0) // 总条数
-const outerVisible = ref(false)
-const newFolder = ref(false)
-const centerDialogVisible = ref(false)
-const dialogFormVisible = ref(false)
-const showDetail = ref(false)
+
+const RemoveDialog = ref(false)
+const NewFolder = ref(false)
+const UploadDialog = ref(false)
+const RenameDialog = ref(false)
+const ShowDetailDialog = ref(false)
+const ShareDiglog = ref(false)
+const MoveDialog = ref(false)
+
 const refresh = ref(false)
-const shareFile = ref(false)
-const moveFile = ref(false)
+
 
 const search = () => {
     refresh.value = false
     setTimeout(() => {
-        axios.get(localServer + '/file/search?keyword=' + inputSearch.value + '&currentPage=' + 1 + '&pageSize=20&path=' + path.value)
+        axios.get('/file/search')
             .then(res => {
                 if (res.data) {
-                    fileList.value = res.data.data
-                    total.value = res.data.total
-
+                    fileList.value = res.data
                 } else {
                     ElMessage.error("搜索失败")
                 }
@@ -181,8 +181,8 @@ const search = () => {
 
     }, 200)
 }
-search()
 
+search()
 
 const changFileList = () => {
     axios.post('/file/listAll', {
@@ -213,22 +213,22 @@ const buttons = ref([
     { index: 7, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Add%20Folder.png" },
 ])
 
-/**文件预览 */
+/**非文本文件预览 */
 const open = (filepath) => {
     if (filepath.endsWith('.png') || filepath.endsWith('.jpg') || filepath.endsWith('.jpeg') || filepath.endsWith('.gif')) {
         fileType.value = '.png'
-        URL.value = localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath
-        showDetail.value = true
+        URL.value = localServer + '/file/download?path=' + filepath
+        ShowDetailDialog.value = true
     } else if (filepath.endsWith('.zip') || filepath.endsWith('.rar') || filepath.endsWith('.7z')) {
         ElMessage.warning("无法在线预览压缩包，请下载查看")
     } else if (filepath.endsWith('.mp4') || filepath.endsWith('.MP4')) {
         fileType.value = '.mp4'
         URL.value = localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath
-        showDetail.value = true
+        ShowDetailDialog.value = true
     } else if (filepath.endsWith('.mp3') || filepath.endsWith('.MP3')) {
         fileType.value = '.mp3'
         URL.value = localServer + '/file/getImage?owner=' + localStorage.getItem('id') + '&path=' + filepath
-        showDetail.value = true
+        ShowDetailDialog.value = true
     } else if (filepath.endsWith('.pdf')) {
         window.open(localServer + '/file/getPDF?owner=' + localStorage.getItem('id') + '&path=' + filepath)
     } else if (filepath.endsWith('.docx') || filepath.endsWith('.doc') || filepath.endsWith('.ppt') || filepath.endsWith('.pptx') || filepath.endsWith('.xlsx')) {
@@ -240,7 +240,7 @@ const open = (filepath) => {
     }
 }
 
-/**文件预览图 */
+/**文本文件logo */
 const selectCover = (fileName, filePath) => {
     if (fileName.endsWith('.conf')) {
         return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Documents.png'
@@ -301,10 +301,29 @@ const changePage = (val) => {
 const onUploadSuccess = (response) => {
     if (response.code == 200) {
         ElMessage.success("上传成功")
-        //centerDialogVisible.value = false
         search()
     } else {
         ElMessage.error("上传失败")
+    }
+}
+
+/**重命名 */
+const rename = () => {
+    if (InputWaitToRename.value === '') {
+        ElMessage.warning('请输入文件名')
+    } else if (InputWaitToRename.value.indexOf("/") !== -1) {
+        ElMessage.warning('文件名不能包含"/"')
+    } else {
+        post(localServer + '/file/rename', {
+            path: fileList.value[checkList.value].filepath,
+            filename: InputWaitToRename.value
+        },(response) =>{
+            ElMessage.success(response);
+            search();
+        },(response) => {
+            ElMessage.warning(response)
+        })
+        RenameFormVisible.value = false
     }
 }
 
@@ -312,7 +331,7 @@ const onUploadSuccess = (response) => {
 const remove = () => {
     for (let i = 0; i < checkList.value.length; i++) {
         setTimeout(() => {
-            axios.get(localServer + '/file/delete?owner=' + localStorage.getItem('id') + '&path=' + fileList.value[checkList.value[i]].filepath)
+            axios.get(localServer + '/file/delete?path=' + fileList.value[checkList.value[i]].filepath)
                 .then(res => {
                     if (res.data) {
                         if (i === checkList.value.length - 1) {
@@ -352,48 +371,48 @@ const ClickToFolder = () => {
 /**按钮事件绑定 */
 const handleButtonClick = (index) => {
     if (index === 0) {
-        centerDialogVisible.value = true
+        UploadDialog.value = true
     } else if (index === 1) {
         if (checkList.value.length === 0) {
             ElMessage.warning('请勾选需要下载的文件')
         } else {
             for (let i = 0; i < checkList.value.length; i++) {
+                ElMessage.success(fileList.value[checkList.value[i]].filepath)
                 setTimeout(() => {
-                    window.open(localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + fileList.value[checkList.value[i]].filepath)
+                    window.open(localServer + '/file/download?&path=' + fileList.value[checkList.value[i]].filepath)
                 }, 200);
             }
             checkList.value = []
-
         }
     } else if (index === 2) {
         if (checkList.value.length === 0) {
             ElMessage.warning('请勾选需要删除的文件')
         } else {
-            outerVisible.value = true
+            RemoveDialog.value = true
         }
     } else if (index === 3) {
         if (checkList.value.length === 0) {
             ElMessage.warning('请勾选需要移动的文件')
         } else {
-            moveFile.value = true
+            MoveDialog.value = true
         }
     } else if (index === 4) {
         if (checkList.value.length != 1) {
             ElMessage.warning('只能同时修改一个文件名')
         } else {
             currentFilename.value = fileList.value[checkList.value[0]].filename
-            dialogFormVisible.value = true
+            RenameDialog.value = true
             open(fileList.value[checkList.value[0]].filepath)
-            showDetail.value = false
+            ShowDetailDialog.value = false
         }
     } else if (index === 5) {
         if (checkList.value.length === 0) {
             ElMessage.warning('请勾选需要分享的文件')
         } else {
-            shareFile.value = true
+            ShareDiglog.value = true
         }
     } else if (index === 6) {
-        newFolder.value = true
+        NewFolder.value = true
     }
 }
 
