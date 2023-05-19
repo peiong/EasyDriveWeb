@@ -62,7 +62,8 @@ const login = () => {
       username: form.account,
       password: form.password,
     }, () => {
-      axios.get('/check/user').then(res => {
+      axios.get('/check/user?username=' + form.account).then(res => {
+        localStorage.setItem("id", res.data.id)
         localStorage.setItem("username", res.data.username)
         localStorage.setItem("phone", res.data.phone)
         localStorage.setItem("email", res.data.email)

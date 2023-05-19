@@ -3,23 +3,23 @@
         <el-main>
             <div style="color: rgb(100,100,100); text-align: left;">
                 <h2>{{ title }}</h2>
-
                 <!--个人信息-->
                 <div class="infomation-contianer">
-
                     <!--头像-->
                     <div class="container">
-                        <el-dialog v-model="dialogAvatar" title="更新头像" center width="410px" :before-close="handleClose">
-                            <el-upload class="upload-demo" drag :data="data" :show-file-list="false"
-                                :action="localServer + '/after/UpdateAvatar'" :before-upload="beforeUpload"
-                                :on-success="onUploadSuccess">
+                        <el-dialog v-model="dialogAvatar" title="更新头像" center width="410px">
+                            <el-upload drag :show-file-list="false"
+                                :action="localServer +'/after/avatar'" :data="data" :on-success="onUploadSuccess">
                                 <img style="width: 100px;"
                                     src="https://f005.backblazeb2.com/file/img-forWeb/uPic/Cloud2.png">
                                 <div class="el-upload__text">将图片拖到此处，或<em>点击上传</em></div>
                             </el-upload>
+
+                        
                         </el-dialog>
                     </div>
-                    <el-avatar :size="75" src="https://f005.backblazeb2.com/file/img-forWeb/uPic/lofi.png"
+                    <el-avatar :size="75"
+                        :src="getAvatarUrl()"
                         class="user-avatar" @click="dialogAvatar = true"></el-avatar>
                     <br>
 
@@ -31,7 +31,8 @@
                         <el-dialog v-model="dialogPhone" title="修改账号" center width="410px" :before-close="handleClose">
                             <div style="text-align: left;">
                                 <p>您当前的手机号码为{{ phone == "null" ? "空，请绑定" : " " + phone }}</p>
-                                <el-input class="dialog-input" :disabled="DisabledPhone" v-model="PhoneWaitToUpdate" placeholder="请输入需要绑定的手机号：">
+                                <el-input class="dialog-input" :disabled="DisabledPhone" v-model="PhoneWaitToUpdate"
+                                    placeholder="请输入需要绑定的手机号：">
                                     <template #prefix>
                                         <el-icon slot="prefix">
                                             <User />
@@ -66,7 +67,8 @@
                         <el-dialog v-model="dialogEmail" title="修改邮箱" width="410px" center :before-close="handleClose">
                             <div style="text-align: left;">
                                 <p>您当前的邮箱为{{ email == "null" ? "空，请绑定" : " " + email }}</p>
-                                <el-input v-model="EmailWaitToUpdate" :disabled="DisabledEmail" class="dialog-input" placeholder="请输入需要绑定的邮箱：">
+                                <el-input v-model="EmailWaitToUpdate" :disabled="DisabledEmail" class="dialog-input"
+                                    placeholder="请输入需要绑定的邮箱：">
                                     <template #prefix>
                                         <el-icon slot="prefix">
                                             <User />
@@ -135,9 +137,12 @@ import { localServer, post, get, phoneReg, emailReg, passwordReg, nameReg } from
 import { ElMessage } from 'element-plus';
 import { User, Lock, Message } from '@element-plus/icons-vue'
 import router from '@/router'
+import axios from 'axios';
 
 const title = ref('账号详情')
 
+const id = localStorage.getItem('id')
+const URL = ref('')
 const phone = localStorage.getItem('phone')
 const email = localStorage.getItem('email')
 const username = ref(localStorage.getItem('username'))
@@ -151,6 +156,13 @@ const dialogPhone = ref(false)
 const dialogPassword = ref(false)
 const dialogEmail = ref(false)
 const dialogAvatar = ref(false)
+const data = ref({
+    id: localStorage.getItem('id'),
+})
+
+const getAvatarUrl = () => {
+    return localServer + '/after/GetAvatar?id=' + localStorage.getItem('id') + '&time=' + new Date().getTime()
+}
 
 const DisabledPhone = ref(false)
 const DisabledEmail = ref(false)
@@ -171,7 +183,7 @@ const table = reactive({
 const onUploadSuccess = (response) => {
     if (response.success) {
         ElMessage.success("上传成功")
-        dialogAvatar.value = false
+        URL.value = localServer + '/after/GetAvatar'
         search()
     } else {
         ElMessage.error("上传失败")
@@ -183,26 +195,27 @@ const SendMessage = () => {
         ElMessage.warning("手机号码格式有误")
     } else {
         post('/after/SendMessage', {
-        account: PhoneWaitToUpdate.value
-    }, (response) => {
-        ElMessage.success(response)
-        DisabledPhone.value = true;
-        table.countdown = 60;
-        table.isCounting = true;
-        const timer = setInterval(() => {
-            table.countdown--;
-            if (table.countdown === 0) {
-                clearInterval(timer);
-                table.isCounting = false;
-            }
-        }, 1000)
-    }, (response) => {
-        ElMessage.warning(response)
-    })
+            account: PhoneWaitToUpdate.value
+        }, (response) => {
+            ElMessage.success(response)
+            DisabledPhone.value = true;
+            table.countdown = 60;
+            table.isCounting = true;
+            const timer = setInterval(() => {
+                table.countdown--;
+                if (table.countdown === 0) {
+                    clearInterval(timer);
+                    table.isCounting = false;
+                }
+            }, 1000)
+        }, (response) => {
+            ElMessage.warning(response)
+        })
     }
 }
 const UpdatePhone = () => {
     post('/after/UpdatePhone', {
+        id: localStorage.getItem('id'),
         phone: PhoneWaitToUpdate.value,
         code: CodeFromPhone.value
     }, (response) => {
@@ -223,26 +236,27 @@ const SendEmail = () => {
         ElMessage.warning("邮箱格式有误")
     } else {
         post('/after/SendEmail', {
-        account: EmailWaitToUpdate.value
-    }, (response) => {
-        ElMessage.success(response);
-        DisabledEmail.value = true;
-        table.countdown1 = 60;
-        table.isCounting1 = true;
-        const timer = setInterval(() => {
-            table.countdown1--;
-            if (table.countdown1 === 0) {
-                clearInterval(timer);
-                table.isCounting1 = false;
-            }
-        }, 1000)
-    }, (response) => {
-        ElMessage.warning(response)
-    })
+            account: EmailWaitToUpdate.value
+        }, (response) => {
+            ElMessage.success(response);
+            DisabledEmail.value = true;
+            table.countdown1 = 60;
+            table.isCounting1 = true;
+            const timer = setInterval(() => {
+                table.countdown1--;
+                if (table.countdown1 === 0) {
+                    clearInterval(timer);
+                    table.isCounting1 = false;
+                }
+            }, 1000)
+        }, (response) => {
+            ElMessage.warning(response)
+        })
     }
 }
 const UpdateEmail = () => {
     post('/after/UpdateEmail', {
+        id: localStorage.getItem('id'),
         email: EmailWaitToUpdate.value,
         code: CodeFromEmail.value
     }, (response) => {
@@ -265,6 +279,7 @@ const UpdatePassword = () => {
         ElMessage.warning('密码需包含大小写字母数字和特殊符号')
     } else {
         post('/after/UpdatePassword', {
+            id: localStorage.getItem('id'),
             oldPassword: inputs.value[0].value,
             newPassword: inputs.value[1].value,
         }, (response) => {
@@ -284,13 +299,14 @@ const UpdateUsename = () => {
         ElMessage.warning('用户名限定长度为4-16个只能包含中文、英文、数字、下划线和减号的字符')
     } else {
         post('/after/UpdateUsername', {
-        username: username.value
-    }, (message) => {
-        ElMessage.success(message)
-        localStorage.setItem("username", username.value)
-    }, (message) => {
-        ElMessage.warning(message)
-    })
+            id: localStorage.getItem('id'),
+            username: username.value
+        }, (message) => {
+            ElMessage.success(message)
+            localStorage.setItem("username", username.value)
+        }, (message) => {
+            ElMessage.warning(message)
+        })
     }
 }
 

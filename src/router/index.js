@@ -72,7 +72,7 @@ const router = createRouter(
 )
 
 router.beforeEach((to, from, next) => {
-    axios.get('/check/user')
+    axios.get('/check/auth')
         .then(res => {
             if (res.data.msg == 'fail' && to.name.startsWith('after')) {
                 next('/login')

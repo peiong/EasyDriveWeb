@@ -2,9 +2,10 @@
     <div class="file-layout">
 
         <!--上传文件对话框-->
+        
         <el-dialog v-model="UploadDialog" title="上传文件" width="50%" center destroy-on-close>
             <el-upload class="upload-demo" drag :show-file-list="false" :action="localServer + '/file/upload'"
-                :before-upload="beforeUpload" :on-success="onUploadSuccess">
+                :before-upload="beforeUpload" :data="data" :on-success="onUploadSuccess">
                 <img style="width: 100px;" src="https://f005.backblazeb2.com/file/img-forWeb/uPic/Cloud2.png">
                 <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
@@ -19,7 +20,8 @@
         </el-dialog>
 
         <!--修改文件名对话框-->
-        <el-dialog v-model="RenameDialog" title="修改文件名" height="50%" width="40%" top="5vh" destroy-on-close>
+        <el-dialog v-model="RenameDialog" title="修改文件名" height="50%" width="40%" top="5vh" :before-close="clearInput"
+            destroy-on-close>
             <p>{{ currentFilename }}</p>
             <el-input class="inputForRenameAndFolder" v-model="InputWaitToRename" :placeholder="'重命名：' + '（名称不能包含 / ）'" />
             <el-button class="rename-button" @click="rename">修改</el-button>
@@ -30,7 +32,7 @@
         </el-dialog>
 
         <!--删除文件对话框-->
-        <el-dialog v-model="RemoveDialog" width="30%" title="确认删除该文件吗？" center>
+        <el-dialog v-model="RemoveDialog" width="30%" title="确认删除该文件吗？" center destroy-on-close>
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="RemoveDialog = false">取消</el-button>
@@ -40,12 +42,12 @@
         </el-dialog>
 
         <!--新建文件夹对话框-->
-        <el-dialog v-model="NewFolder" width="400px" title="新建文件夹" center>
+        <el-dialog v-model="FolderDialog" width="400px" title="新建文件夹" center destroy-on-close>
             <template #footer>
                 <div class="dialog-footer">
                     <el-input v-model="folderName" style="width: 350px;" placeholder="请输入文件夹名称：（名称不能包含 '/' ）" />
                     <div style="margin: 15px;">
-                        <el-button type="danger" @click="NewFolder = false">取消</el-button>
+                        <el-button type="danger" @click="FolderDialog = false">取消</el-button>
                         <el-button type="primary" @click="ClickToFolder">新建</el-button>
                     </div>
                 </div>
@@ -53,7 +55,9 @@
         </el-dialog>
 
         <!--移动文件对话框-->
-        <el-dialog v-model="MoveDialog" width="30%" title="移动文件" center></el-dialog>
+        <el-dialog v-model="MoveDialog" width="30%" title="移动文件" center>
+            <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick" />
+        </el-dialog>
 
         <!--文件分享-->
         <el-dialog v-model="ShareDiglog" width="30%" title="分享文件" center></el-dialog>
@@ -71,7 +75,7 @@
                         </el-breadcrumb>
                     </div>
                     <div style="height: 53px; text-align: left;">
-                        <el-input @keyup.enter="search" v-model="inputSearch" class="primary" placeholder="搜索">
+                        <el-input @keyup.enter="search" v-model="InputSearch" class="primary" placeholder="搜索">
                             <template #prefix>
                                 <el-icon slot="prefix">
                                     <img style="width: 23px; cursor: pointer;" @click="search"
@@ -96,7 +100,7 @@
                                 :body-style="{ padding: '10px' }">
                                 <el-checkbox :label="index"
                                     style="position: absolute; left: 2px; top: -7px;"><br></el-checkbox>
-                                <div @click="open(item.filepath)">
+                                <div @click="open(item.filepath, item.filename)">
                                     <img v-if="!item.filename.toLowerCase().endsWith('.mp4')"
                                         :src="selectCover(item.filename.toString(), item.filepath.toString())"
                                         class="image" />
@@ -129,17 +133,37 @@
 </template>
 
 <script setup>
+
+</script>
+
+<script lang="ts" setup>
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
 import { localServer, post } from '@/net'
 
+interface Tree {
+    label: string
+    children?: Tree[]
+}
+
+const defaultProps = {
+    children: 'children',
+    label: 'label',
+}
+
+//const data: Tree[] = [{}]
+
 const checkList = ref([])
 const title = ref("文件")
-const inputSearch = ref('')
+const InputSearch = ref('')
 
 const path = ref('/')
 
+const data = ref({
+    path: path.value,
+    id: localStorage.getItem('id'),
+})
 
 const fileType = ref('')
 const URL = ref('')
@@ -153,32 +177,38 @@ const folderName = ref('')
 const currentPage = ref(1) // 当前页
 const total = ref(0) // 总条数
 
+
 const RemoveDialog = ref(false)
-const NewFolder = ref(false)
+const FolderDialog = ref(false)
 const UploadDialog = ref(false)
 const RenameDialog = ref(false)
+const clearInput = (done) => {
+    InputWaitToRename.value = ''
+    done()
+}
 const ShowDetailDialog = ref(false)
 const ShareDiglog = ref(false)
 const MoveDialog = ref(false)
 
 const refresh = ref(false)
 
-
 const search = () => {
     refresh.value = false
     setTimeout(() => {
-        axios.get('/file/search')
-            .then(res => {
-                if (res.data) {
-                    fileList.value = res.data
-                } else {
-                    ElMessage.error("搜索失败")
-                }
-                setTimeout(() => {
-                    refresh.value = true
-                }, 200)
-            })
-
+        axios.post('/file/search', {
+            id: localStorage.getItem('id'),
+            path: path.value,
+            keyword: InputSearch.value,
+        }).then(res => {
+            if (res.data) {
+                fileList.value = res.data
+            } else {
+                ElMessage.error("搜索失败")
+            }
+            setTimeout(() => {
+                refresh.value = true
+            }, 200)
+        })
     }, 200)
 }
 
@@ -214,7 +244,7 @@ const buttons = ref([
 ])
 
 /**非文本文件预览 */
-const open = (filepath) => {
+const open = (filepath, filename) => {
     if (filepath.endsWith('.png') || filepath.endsWith('.jpg') || filepath.endsWith('.jpeg') || filepath.endsWith('.gif')) {
         fileType.value = '.png'
         URL.value = localServer + '/file/download?path=' + filepath
@@ -230,12 +260,11 @@ const open = (filepath) => {
         URL.value = localServer + '/file/getImage?owner=' + localStorage.getItem('id') + '&path=' + filepath
         ShowDetailDialog.value = true
     } else if (filepath.endsWith('.pdf')) {
-        window.open(localServer + '/file/getPDF?owner=' + localStorage.getItem('id') + '&path=' + filepath)
+        window.open(localServer + '/file/getPDF?path=' + filepath)
     } else if (filepath.endsWith('.docx') || filepath.endsWith('.doc') || filepath.endsWith('.ppt') || filepath.endsWith('.pptx') || filepath.endsWith('.xlsx')) {
         window.open('http://view.xdocin.com/view?src=' + encodeURIComponent(localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath))
-    } else if (filepath.endsWith('/')) {
-        ElMessage
-        path.value = path.value + filepath
+    } else if (filename.endsWith('/')) {
+        path.value = path.value + filename
         search()
     }
 }
@@ -250,7 +279,7 @@ const selectCover = (fileName, filePath) => {
         return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Archive%20Folder.png'
     } else if (fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') ||
         fileName.endsWith('.gif') || fileName.endsWith('.bmp')) {
-        return localServer + '/file/getImage?owner=' + localStorage.getItem('id') + '&path=' + filePath
+        return localServer + '/file/getImage?path=' + filePath
     } else if (fileName.endsWith('.mp4') || fileName.endsWith('.MP4') || fileName.endsWith('.avi') || fileName.endsWith('.mkv') ||
         fileName.endsWith('.flv') || fileName.endsWith('.mov') || fileName.endsWith('.mp3') ||
         fileName.endsWith('.wav') || fileName.endsWith('.FLAC') || fileName.endsWith('.aac')) {
@@ -301,6 +330,7 @@ const changePage = (val) => {
 const onUploadSuccess = (response) => {
     if (response.code == 200) {
         ElMessage.success("上传成功")
+        checkList.value = []
         search()
     } else {
         ElMessage.error("上传失败")
@@ -312,18 +342,19 @@ const rename = () => {
     if (InputWaitToRename.value === '') {
         ElMessage.warning('请输入文件名')
     } else if (InputWaitToRename.value.indexOf("/") !== -1) {
-        ElMessage.warning('文件名不能包含"/"')
+        ElMessage.warning("文件名不能包含'/'")
     } else {
-        post(localServer + '/file/rename', {
-            path: fileList.value[checkList.value].filepath,
+        post('/file/rename', {
+            id: fileList.value[checkList.value].id,
             filename: InputWaitToRename.value
-        },(response) =>{
+        }, (response) => {
             ElMessage.success(response);
+            checkList.value = []
             search();
-        },(response) => {
+        }, (response) => {
             ElMessage.warning(response)
         })
-        RenameFormVisible.value = false
+        RenameDialog.value = false
     }
 }
 
@@ -331,7 +362,7 @@ const rename = () => {
 const remove = () => {
     for (let i = 0; i < checkList.value.length; i++) {
         setTimeout(() => {
-            axios.get(localServer + '/file/delete?path=' + fileList.value[checkList.value[i]].filepath)
+            axios.get('/file/delete?id=' + fileList.value[checkList.value[i]].id)
                 .then(res => {
                     if (res.data) {
                         if (i === checkList.value.length - 1) {
@@ -345,7 +376,7 @@ const remove = () => {
                 })
         }, 200);
     }
-    outerVisible.value = false
+    RemoveDialog.value = false
 }
 
 /**新建文件夹 */
@@ -353,18 +384,31 @@ const ClickToFolder = () => {
     if (folderName.value === '') {
         ElMessage.warning('请输入文件夹名称')
     } else if (folderName.value.indexOf("/") !== -1) {
-        ElMessage.error("文件夹名称不能包含'/''")
+        ElMessage.error("文件夹名称不能包含'/'")
     } else {
-        axios.get(localServer + '/file/folder?owner=' + localStorage.getItem('id') + '&path=' + path.value + '&filename=' + folderName.value + '/')
-            .then(res => {
-                if (res.data) {
-                    ElMessage.success("新建成功")
-                    centerDialogVisible.value = false
-                    search()
-                } else if (!res.data) {
-                    ElMessage.error("新建失败")
-                }
-            })
+        axios.post('/file/folder', {
+            id: localStorage.getItem('id'),
+            path: path.value,
+            filename: folderName.value,
+            folder: folderName.value
+        }).then(res => {
+            if (res.data) {
+                ElMessage.success("新建成功")
+                FolderDialog.value = false
+                checkList.value = []
+                search()
+            } else if (!res.data) {
+                ElMessage.error("新建失败")
+            }
+        })
+    }
+}
+
+function wait(ms) {
+    var start = new Date().getTime();
+    var end = start;
+    while (end < start + ms) {
+        end = new Date().getTime();
     }
 }
 
@@ -377,10 +421,8 @@ const handleButtonClick = (index) => {
             ElMessage.warning('请勾选需要下载的文件')
         } else {
             for (let i = 0; i < checkList.value.length; i++) {
-                ElMessage.success(fileList.value[checkList.value[i]].filepath)
-                setTimeout(() => {
-                    window.open(localServer + '/file/download?&path=' + fileList.value[checkList.value[i]].filepath)
-                }, 200);
+                window.open(localServer + '/file/download?path=' + fileList.value[checkList.value[i]].filepath)
+                wait(200)
             }
             checkList.value = []
         }
@@ -412,7 +454,7 @@ const handleButtonClick = (index) => {
             ShareDiglog.value = true
         }
     } else if (index === 6) {
-        NewFolder.value = true
+        FolderDialog.value = true
     }
 }
 
