@@ -2,7 +2,6 @@
     <div class="file-layout">
 
         <!--上传文件对话框-->
-        
         <el-dialog v-model="UploadDialog" title="上传文件" width="50%" center destroy-on-close>
             <el-upload class="upload-demo" drag :show-file-list="false" :action="localServer + '/file/upload'"
                 :before-upload="beforeUpload" :data="data" :on-success="onUploadSuccess">
