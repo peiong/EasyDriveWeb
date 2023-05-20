@@ -228,7 +228,7 @@ const beforeUpload = () => {
 }
 
 const videosrc = (filepath) => {
-    return localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath
+    return localServer + '/file/download?path=' + filepath
 }
 
 /**按钮样式 */
@@ -252,7 +252,7 @@ const open = (filepath, filename) => {
         ElMessage.warning("无法在线预览压缩包，请下载查看")
     } else if (filepath.endsWith('.mp4') || filepath.endsWith('.MP4')) {
         fileType.value = '.mp4'
-        URL.value = localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath
+        URL.value = localServer + '/file/download?path=' + filepath
         ShowDetailDialog.value = true
     } else if (filepath.endsWith('.mp3') || filepath.endsWith('.MP3')) {
         fileType.value = '.mp3'
