@@ -17,8 +17,17 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import { ref } from 'vue'
 const title = ref('重复文件')
+
+const scan = () => {
+    axios.get('/scan').then(res => {
+        
+    })
+}
+
+
 </script>
 
 <style scoped>

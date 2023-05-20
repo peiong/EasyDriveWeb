@@ -12,6 +12,11 @@
 
         <!--文件详情对话框-->
         <el-dialog v-model="ShowDetailDialog" title="文件详情" width="50%" top="5vh" destroy-on-close>
+            <div style="margin-bottom: 10px;">
+                <span>
+                    {{ currentName }}
+                </span>
+            </div>
             <img style="height: 450px; object-fit: contain;" v-if="fileType == '.png'" :src="URL" class="dialog-display">
             <video v-else-if="fileType == '.mp4'" :src="URL" class="dialog-display" controls autoplay
                 preload="auto"></video>
@@ -19,15 +24,30 @@
         </el-dialog>
 
         <!--修改文件名对话框-->
-        <el-dialog v-model="RenameDialog" title="修改文件名" height="50%" width="40%" top="5vh" :before-close="clearInput"
+        <el-dialog v-model="RenameDialog" title="修改文件名" width="50%" top="5vh" center :before-close="clearInput"
             destroy-on-close>
-            <p>{{ currentFilename }}</p>
-            <el-input class="inputForRenameAndFolder" v-model="InputWaitToRename" :placeholder="'重命名：' + '（名称不能包含 / ）'" />
-            <el-button class="rename-button" @click="rename">修改</el-button>
-            <img style="height: 400px; object-fit: contain;" v-if="fileType == '.png'" :src="URL" class="dialog-display">
-            <video v-else-if="fileType == '.mp4'" :src="URL" class="dialog-display" controls autoplay
-                preload="auto"></video>
-            <audio v-else-if="fileType == '.mp3'" controls :src="URL" class="dialog-display"></audio>
+            <div style="text-align: center; margin-bottom: 10px;">
+                <span>
+                    名称不能包含 " / "
+                </span>
+            </div>
+            <div style="text-align: center;">
+                <el-input v-model="InputWaitToRename" style="width: 550px; height: 40px;"
+                    :placeholder="currentFilename.toString().replace(/^\/|\/$/g, '')" />
+            </div>
+            <template #footer>
+                <span class="dialog-footer">
+                    <div style="margin-bottom: 15px;">
+                        <el-button @click="RenameDialog = false">取消</el-button>
+                        <el-button type="primary" @click="rename">确认</el-button>
+                    </div>
+                    <img style="height: 400px; object-fit: contain;" v-if="fileType == '.png'" :src="URL"
+                        class="dialog-display">
+                    <video v-else-if="fileType == '.mp4'" :src="URL" class="dialog-display" controls autoplay
+                        preload="auto"></video>
+                    <audio v-else-if="fileType == '.mp3'" controls :src="URL" class="dialog-display"></audio>
+                </span>
+            </template>
         </el-dialog>
 
         <!--删除文件对话框-->
@@ -41,53 +61,54 @@
         </el-dialog>
 
         <!--新建文件夹对话框-->
-        <el-dialog v-model="FolderDialog" width="400px" title="新建文件夹" center destroy-on-close>
-            <template #footer>
-                <div class="dialog-footer">
+        <el-dialog v-model="FolderDialog" title="新建文件夹" width="40%" center>
+            <div style="text-align: center; margin-bottom: 10px;">
+                <span>
                     <el-input v-model="folderName" style="width: 350px;" placeholder="请输入文件夹名称：（名称不能包含 '/' ）" />
-                    <div style="margin: 15px;">
-                        <el-button type="danger" @click="FolderDialog = false">取消</el-button>
-                        <el-button type="primary" @click="ClickToFolder">新建</el-button>
-                    </div>
-                </div>
+                </span>
+            </div>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="FolderDialog = false">取消</el-button>
+                    <el-button type="primary" @click="ClickToFolder">确认</el-button>
+                </span>
             </template>
-        </el-dialog>
-
-        <!--移动文件对话框-->
-        <el-dialog v-model="MoveDialog" width="30%" title="移动文件" center>
-            <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick" />
         </el-dialog>
 
         <!--文件分享-->
         <el-dialog v-model="ShareDiglog" width="30%" title="分享文件" center></el-dialog>
 
+        <!--文件页-->
         <el-container>
             <el-header>
                 <div>
                     <div class="head-title">
                         <h2>{{ title }}</h2>
-                        <el-breadcrumb style="margin-bottom: 15px;" @change="changFileList" separator="/">
-                            <el-breadcrumb-item :to="{ path: '/' }">全部文件</el-breadcrumb-item>
-                            <el-breadcrumb-item><a href="/">promotion management</a></el-breadcrumb-item>
-                            <el-breadcrumb-item>promotion list</el-breadcrumb-item>
-                            <el-breadcrumb-item>promotion detail</el-breadcrumb-item>
-                        </el-breadcrumb>
                     </div>
-                    <div style="height: 53px; text-align: left;">
-                        <el-input @keyup.enter="search" v-model="InputSearch" class="primary" placeholder="搜索">
-                            <template #prefix>
-                                <el-icon slot="prefix">
-                                    <img style="width: 23px; cursor: pointer;" @click="search"
-                                        src="https://f005.backblazeb2.com/file/img-forWeb/uPic/Search.png">
-                                </el-icon>
-                            </template>
-                        </el-input>
-                        <el-button v-for="(button, index) in buttons" :key="index" :type="button.types"
-                            @click="handleButtonClick(index)">
-                            <el-icon class="el-icon--center">
-                                <img class="image-effect" style="width: 30px;" :src="button.cover">
-                            </el-icon>
-                        </el-button>
+                    <div style="text-align: left;">
+                        <div style="margin-bottom: 12px;">
+                            <el-input @keyup.enter="search" v-model="InputSearch" class="searchInput" placeholder="搜索">
+                                <template #prefix>
+                                    <el-icon slot="prefix">
+                                        <img style="width: 23px; cursor: pointer;" @click="search"
+                                            src="https://f005.backblazeb2.com/file/img-forWeb/uPic/Search.png">
+                                    </el-icon>
+                                </template>
+                            </el-input>
+                        </div>
+
+                        <!--顶部按钮-->
+                        <div>
+                            <el-button v-for="(button, index) in buttons" :key="index" :type="button.types"
+                                @click="handleButtonClick(index)">
+                                <el-tooltip offset="17" class="box-item" effect="dark" hide-after="0"
+                                    :content="button.content" placement="bottom">
+                                    <el-icon class="el-icon--center">
+                                        <img class="image-effect" style="width: 30px;" :src="button.cover">
+                                    </el-icon>
+                                </el-tooltip>
+                            </el-button>
+                        </div>
                     </div>
                 </div>
             </el-header>
@@ -108,10 +129,11 @@
                                 </div>
                                 <div class="elcard-font">
                                     <span>
-                                        {{ item.filename.toString().length <= 10 ? item.filename.toString().replace("/", ""
-                                        ) : item.filename.toString().substring(0, 7).replace("/", "") + '...' +
-                                        item.filename.toString().substring(item.filename.lastIndexOf('.') +
-                                            1).replace("/", "") }} </span>
+                                        {{ item.filename.toString().length <= 10 ?
+                                            item.filename.toString().replace(/^\/|\/$/g, '') :
+                                            item.filename.toString().substring(0, 7).replace(/^\/|\/$/g, '') + '...' +
+                                            item.filename.toString().substring(item.filename.lastIndexOf('.') +
+                                                1).replace(/^\/|\/$/g, '') }} </span>
                                 </div>
                                 <div class="elcard-font">
                                     <p v-if="!item.filename.endsWith('/')">
@@ -123,7 +145,7 @@
                     </div>
                 </el-collapse-transition>
             </el-main>
-            <el-footer style="width: 860px;">
+            <el-footer>
                 <el-pagination style="display: flex; justify-content: center;" small background layout="prev, pager, next"
                     :page-size="20" :total="total" @current-change="changePage" :current-page="currentPage.value" />
             </el-footer>
@@ -141,20 +163,18 @@ import { ElMessage } from 'element-plus'
 import axios from 'axios'
 import { localServer, post } from '@/net'
 
-interface Tree {
-    label: string
-    children?: Tree[]
-}
+// interface Tree {
+//     label: string
+//     children?: Tree[]
+// }
 
-const defaultProps = {
-    children: 'children',
-    label: 'label',
-}
-
-//const data: Tree[] = [{}]
+// const defaultProps = {
+//     children: 'children',
+//     label: 'label',
+// }
 
 const checkList = ref([])
-const title = ref("文件")
+const title = ref("全部文件")
 const InputSearch = ref('')
 
 const path = ref('/')
@@ -168,6 +188,7 @@ const fileType = ref('')
 const URL = ref('')
 /**当前文件名 */
 const currentFilename = ref('')
+const currentName = ref('')
 /**重命名输入框 */
 const InputWaitToRename = ref('')
 const fileList = ref([])
@@ -175,7 +196,6 @@ const folderName = ref('')
 
 const currentPage = ref(1) // 当前页
 const total = ref(0) // 总条数
-
 
 const RemoveDialog = ref(false)
 const FolderDialog = ref(false)
@@ -187,7 +207,6 @@ const clearInput = (done) => {
 }
 const ShowDetailDialog = ref(false)
 const ShareDiglog = ref(false)
-const MoveDialog = ref(false)
 
 const refresh = ref(false)
 
@@ -198,9 +217,13 @@ const search = () => {
             id: localStorage.getItem('id'),
             path: path.value,
             keyword: InputSearch.value,
-        }).then(res => {
+            currentPage: 1, 
+            pageSize: 32
+        })
+        .then(res => {
             if (res.data) {
-                fileList.value = res.data
+                fileList.value = res.data.data
+                    total.value = res.data.total
             } else {
                 ElMessage.error("搜索失败")
             }
@@ -213,16 +236,6 @@ const search = () => {
 
 search()
 
-const changFileList = () => {
-    axios.post('/file/listAll', {
-        path: path.value,
-        owner: localStorage.getItem('id')
-    }).then(res => {
-        fileList.value = res.data
-    })
-}
-
-
 const beforeUpload = () => {
     data.value.path = path.value
 }
@@ -233,18 +246,21 @@ const videosrc = (filepath) => {
 
 /**按钮样式 */
 const buttons = ref([
-    { index: 1, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Upload.png" },
-    { index: 2, types: "primary-2nd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Below.png" },
-    { index: 3, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Close.png" },
-    { index: 4, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Drag.png" },
-    { index: 5, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Edit.png" },
-    { index: 6, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Share.png" },
-    { index: 7, types: "primary-3rd", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Add%20Folder.png" },
+    { index: 1, types: "primary-4th", content:"返回", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/icons8-back-to-256.png" },
+    { index: 2, types: "primary-4th", content:"前进", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/icons8-next-page-256.png" },
+    { index: 3, types: "primary-3rd", content:"上传", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Upload.png" },
+    { index: 4, types: "primary-2nd", content:"下载", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Below.png" },
+    { index: 5, types: "primary-3rd", content:"删除", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Close.png" },
+    { index: 6, types: "primary-3rd", content:"重命名", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Edit.png" },
+    { index: 7, types: "primary-3rd", content:"分享", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Share.png" },
+    { index: 8, types: "primary-3rd", content:"新建文件夹", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Add%20Folder.png" },
+    { index: 9, types: "primary-3rd", content:"全选", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/icons8-ok-256.png" },
 ])
 
 /**非文本文件预览 */
 const open = (filepath, filename) => {
     if (filepath.endsWith('.png') || filepath.endsWith('.jpg') || filepath.endsWith('.jpeg') || filepath.endsWith('.gif')) {
+        currentName.value = filename
         fileType.value = '.png'
         URL.value = localServer + '/file/download?path=' + filepath
         ShowDetailDialog.value = true
@@ -260,8 +276,6 @@ const open = (filepath, filename) => {
         ShowDetailDialog.value = true
     } else if (filepath.endsWith('.pdf')) {
         window.open(localServer + '/file/getPDF?path=' + filepath)
-    } else if (filepath.endsWith('.docx') || filepath.endsWith('.doc') || filepath.endsWith('.ppt') || filepath.endsWith('.pptx') || filepath.endsWith('.xlsx')) {
-        window.open('http://view.xdocin.com/view?src=' + encodeURIComponent(localServer + '/file/download?owner=' + localStorage.getItem('id') + '&path=' + filepath))
     } else if (filename.endsWith('/')) {
         path.value = path.value + filename
         search()
@@ -302,25 +316,28 @@ const selectCover = (fileName, filePath) => {
     }
 }
 
-
-
 const changePage = (val) => {
     refresh.value = false
+    currentPage.value = val
     setTimeout(() => {
-        axios.get(localServer + '/file/search?keyword=' + inputSearch.value + '&currentPage=' + val + '&pageSize=20&path=' + path.value)
-            .then(res => {
-                if (res.data) {
-                    fileList.value = res.data.data
+        axios.post('/file/search', {
+            id: localStorage.getItem('id'),
+            path: path.value,
+            keyword: InputSearch.value,
+            currentPage: currentPage.value, 
+            pageSize: 32
+        })
+        .then(res => {
+            if (res.data) {
+                fileList.value = res.data.data
                     total.value = res.data.total
-
-                } else {
-                    ElMessage.error("搜索失败")
-                }
-                setTimeout(() => {
-                    refresh.value = true
-                }, 200)
-            })
-
+            } else {
+                ElMessage.error("搜索失败")
+            }
+            setTimeout(() => {
+                refresh.value = true
+            }, 200)
+        })
     }, 200)
 }
 
@@ -414,8 +431,12 @@ function wait(ms) {
 /**按钮事件绑定 */
 const handleButtonClick = (index) => {
     if (index === 0) {
-        UploadDialog.value = true
+        
     } else if (index === 1) {
+        
+    } else if (index === 2) {
+        UploadDialog.value = true
+    } else if (index === 3) {
         if (checkList.value.length === 0) {
             ElMessage.warning('请勾选需要下载的文件')
         } else {
@@ -424,20 +445,14 @@ const handleButtonClick = (index) => {
                 wait(200)
             }
             checkList.value = []
-        }
-    } else if (index === 2) {
+        } 
+    } else if (index === 4) {
         if (checkList.value.length === 0) {
             ElMessage.warning('请勾选需要删除的文件')
         } else {
             RemoveDialog.value = true
         }
-    } else if (index === 3) {
-        if (checkList.value.length === 0) {
-            ElMessage.warning('请勾选需要移动的文件')
-        } else {
-            MoveDialog.value = true
-        }
-    } else if (index === 4) {
+    } else if (index === 5) {
         if (checkList.value.length != 1) {
             ElMessage.warning('只能同时修改一个文件名')
         } else {
@@ -446,14 +461,24 @@ const handleButtonClick = (index) => {
             open(fileList.value[checkList.value[0]].filepath)
             ShowDetailDialog.value = false
         }
-    } else if (index === 5) {
+    } else if (index === 6) {
         if (checkList.value.length === 0) {
             ElMessage.warning('请勾选需要分享的文件')
         } else {
             ShareDiglog.value = true
         }
-    } else if (index === 6) {
+    } else if (index == 7) {
         FolderDialog.value = true
+    } else if (index == 8) {
+        if (checkList.value.length === fileList.value.length) {
+            checkList.value = []
+        } else if (checkList.value.length === 0) {
+            for (let i = 0; i < fileList.value.length; i++) {
+                checkList.value.push(i)
+            }
+        } else {
+            checkList.value = []
+        }
     }
 }
 
@@ -466,14 +491,20 @@ const handleButtonClick = (index) => {
 }
 
 .el-main {
-    height: 660px;
+    height: 100%;
     min-width: 1024px;
-
 }
 
-.el-input {
+.el-footer {
+    height: 100%;
+    min-width: 1024px;
+}
+
+.searchInput {
     --el-input-border: #ffffff;
     --el-input-border-radius: 20px;
+    height: 40px;
+    width: 366px;
 }
 
 .primary {
@@ -494,6 +525,16 @@ const handleButtonClick = (index) => {
     border: 0 #fff;
     width: 30px;
     height: 30px;
+    background-color: #fff;
+    --el-button-hover-bg-color: #fff;
+    --el-button-outline-color: #fff;
+}
+
+.el-button--primary-4th {
+    border-radius: 10px;
+    border: 0 #fff;
+    width: 20px;
+    height: 20px;
     background-color: #fff;
     --el-button-hover-bg-color: #fff;
     --el-button-outline-color: #fff;
@@ -557,12 +598,6 @@ const handleButtonClick = (index) => {
     width: 100px;
     height: 40px;
     margin: 5px;
-}
-
-.image-effect:hover {
-    transform: scale(1.15);
-    transition: all 0.3s;
-    cursor: pointer;
 }
 
 .dialog-display {

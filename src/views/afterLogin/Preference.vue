@@ -8,20 +8,19 @@
                     <!--头像-->
                     <div class="container">
                         <el-dialog v-model="dialogAvatar" title="更新头像" center width="410px">
-                            <el-upload drag :show-file-list="false"
-                                :action="localServer +'/after/avatar'" :data="data" :on-success="onUploadSuccess">
+                            <el-upload drag :show-file-list="false" :action="localServer + '/after/avatar'" :data="data"
+                                :on-success="onUploadSuccess">
                                 <img style="width: 100px;"
                                     src="https://f005.backblazeb2.com/file/img-forWeb/uPic/Cloud2.png">
                                 <div class="el-upload__text">将图片拖到此处，或<em>点击上传</em></div>
                             </el-upload>
-
-                        
                         </el-dialog>
                     </div>
-                    <el-avatar :size="75"
-                        :src="getAvatarUrl()"
-                        class="user-avatar" @click="dialogAvatar = true"></el-avatar>
-                    <br>
+
+
+                    <el-tooltip class="box-item" effect="dark" hide-after="0" content="更换头像" placement="right">
+                        <el-avatar :size="75" :src="getAvatarUrl()" class="user-avatar" @click="dialogAvatar = true" />
+                    </el-tooltip>
 
                     <!--手机号码-->
                     <div class="container">
@@ -125,6 +124,9 @@
                         <el-input style="width: 150px;" v-model="username" />&nbsp;
                         <el-button class="name" type="primary" @click="UpdateUsename">保存</el-button>
                     </div>
+                    <div>
+                        <el-button class="logout" type="danger" @click="logout">退出登录</el-button>
+                    </div>
                 </div>
             </div>
         </el-main>
@@ -159,6 +161,13 @@ const dialogAvatar = ref(false)
 const data = ref({
     id: localStorage.getItem('id'),
 })
+
+const logout = () => {
+    get('/logout', () => {
+        localStorage.clear()
+        router.push('/login')
+    })
+}
 
 const getAvatarUrl = () => {
     return localServer + '/after/GetAvatar?id=' + localStorage.getItem('id') + '&time=' + new Date().getTime()
@@ -322,7 +331,7 @@ const UpdateUsename = () => {
     border: #409eff;
     border-radius: 20px;
     width: 640px;
-    height: 300px;
+    height: 320px;
 }
 
 .dialog-footer button:first-child {
@@ -348,6 +357,13 @@ const UpdateUsename = () => {
     margin-left: 20px;
     color: black;
     margin-bottom: 5px;
+}
+
+.logout {
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-left: 20px;
 }
 
 a {

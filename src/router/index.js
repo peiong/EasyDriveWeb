@@ -4,8 +4,6 @@ import '../style.css'
 import main from '@/views/AfterLogin/Main.vue'
 import file from '@/views/AfterLogin/File.vue'
 import uploading from '@/views/AfterLogin/UpLoading.vue'
-import downloading from '@/views/AfterLogin/Downloading.vue'
-import completed from '@/views/AfterLogin/Completed.vue'
 import scan from '@/views/AfterLogin/Scan.vue'
 import trash from '@/views/AfterLogin/Trash.vue'
 import preference from '@/views/AfterLogin/Preference.vue'
@@ -38,16 +36,6 @@ const router = createRouter(
                         path: "uploading",
                         name: 'after-uploading',
                         component: uploading
-                    },
-                    {
-                        path: "downloading",
-                        name: 'after-downloading',
-                        component: downloading
-                    },
-                    {
-                        path: "completed",
-                        name: 'after-completed',
-                        component: completed
                     },
                     {
                         path: "scan",
