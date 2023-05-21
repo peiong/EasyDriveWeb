@@ -172,7 +172,7 @@
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
-import { localServer, post } from '@/net'
+import { localServer, post } from '@/util'
 
 const checkList = ref([])
 const title = ref("全部文件")

@@ -135,7 +135,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { localServer, post, get, phoneReg, emailReg, passwordReg, nameReg } from '@/net'
+import { localServer, post, get, phoneReg, emailReg, passwordReg, nameReg } from '@/util'
 import { ElMessage } from 'element-plus';
 import { User, Lock, Message } from '@element-plus/icons-vue'
 import router from '@/router'

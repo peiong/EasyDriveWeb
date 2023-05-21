@@ -5,8 +5,8 @@ import main from '@/views/AfterLogin/Main.vue'
 import file from '@/views/AfterLogin/File.vue'
 import uploading from '@/views/AfterLogin/UpLoading.vue'
 import scan from '@/views/AfterLogin/Scan.vue'
-import trash from '@/views/AfterLogin/Recycle.vue'
-import preference from '@/views/AfterLogin/Preference.vue'
+import recycle from '@/views/AfterLogin/Recycle.vue'
+import person from '@/views/AfterLogin/Person.vue'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
@@ -16,14 +16,12 @@ const router = createRouter(
         routes: [
             {
                 path: '/',
-                name: 'before',
                 redirect: '/login',
-                children: [
-                    { path: 'login', name: 'before-login', component: () => import('@/views/BeforeLogin/Login.vue') },
-                    { path: 'register', name: 'before-register', component: () => import('@/views/BeforeLogin/Register.vue') },
-                    { path: 'recover', name: 'before-recover', component: () => import('@/views/BeforeLogin/Recover.vue') }
-                ]
             },
+
+            { path: '/login', name: 'before-login', component: () => import('@/views/BeforeLogin/Login.vue') },
+            { path: '/register', name: 'before-register', component: () => import('@/views/BeforeLogin/Register.vue') },
+            { path: '/recover', name: 'before-recover', component: () => import('@/views/BeforeLogin/Recover.vue') },
             {
                 path: '/main', redirect: '/main/file', component: main,
                 children: [
@@ -43,14 +41,14 @@ const router = createRouter(
                         component: scan
                     },
                     {
-                        path: "trash",
-                        name: 'after-trash',
-                        component: trash
+                        path: "recycle",
+                        name: 'after-recycle',
+                        component: recycle
                     },
                     {
-                        path: "preference",
-                        name: 'after-preference',
-                        component: preference
+                        path: "person",
+                        name: 'after-person',
+                        component: person
                     },
                 ]
             },
@@ -66,14 +64,17 @@ router.beforeEach((to, from, next) => {
                 next('/login')
             } else if (res.data.msg == 'success' && to.name.startsWith('before')) {
                 next('/main/file')
-            } else { 
+            } else if (to.matched.length === 0) {
+                next('/main')
+            } else {
                 next()
             }
-        }).catch(err => {
-            ElMessage.error("404，页面未找到")
-            next('/login')
         })
-    
+        .catch(err => {
+            // ElMessage.error("404，页面未找到")
+            next('/error')
+        })
+
 })
 
 export default router

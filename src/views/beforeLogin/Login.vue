@@ -43,7 +43,7 @@
 
 <script setup>
 import { reactive } from 'vue';
-import { loginPost } from '@/net'
+import { loginPost } from '@/util'
 import { User, Lock } from '@element-plus/icons-vue'
 import router from '@/router'
 import { ElMessage } from 'element-plus';

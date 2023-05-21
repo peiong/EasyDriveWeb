@@ -46,7 +46,7 @@
 <script setup>
 
 import { reactive } from 'vue';
-import { get, post, passwordReg, phoneReg, emailReg } from '@/net'
+import { get, post, passwordReg, phoneReg, emailReg } from '@/util'
 import router from '@/router'
 import { User, Lock, Message } from '@element-plus/icons-vue'
 import axios from 'axios';
