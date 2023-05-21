@@ -10,17 +10,18 @@
             </el-upload>
         </el-dialog>
 
-        <!--文件详情对话框-->
-        <el-dialog v-model="ShowDetailDialog" title="文件详情" width="50%" top="5vh" destroy-on-close>
+        <!--文件详情-->
+        <el-dialog v-model="ShowDetailDialog" title="新建文件夹" top="5vh" destroy-on-close>
             <div style="margin-bottom: 10px;">
                 <span>
                     {{ currentName }}
+                    <img style="height: 450px; object-fit: contain;" v-if="fileType == '.png'" :src="URL"
+                        class="dialog-display">
+                    <video v-else-if="fileType == '.mp4'" :src="URL" class="dialog-display" controls autoplay
+                        preload="auto"></video>
+                    <audio v-else-if="fileType == '.mp3'" controls :src="URL" class="dialog-display"></audio>
                 </span>
             </div>
-            <img style="height: 450px; object-fit: contain;" v-if="fileType == '.png'" :src="URL" class="dialog-display">
-            <video v-else-if="fileType == '.mp4'" :src="URL" class="dialog-display" controls autoplay
-                preload="auto"></video>
-            <audio v-else-if="fileType == '.mp3'" controls :src="URL" class="dialog-display"></audio>
         </el-dialog>
 
         <!--修改文件名对话框-->
@@ -76,7 +77,15 @@
         </el-dialog>
 
         <!--文件分享-->
-        <el-dialog v-model="ShareDiglog" width="30%" title="分享文件" center></el-dialog>
+        <el-dialog v-model="ShareDiglog" width="30%" title="分享文件" center>
+
+            <div style="text-align: center; margin-bottom: 10px;">
+                <span>
+                    {{ shareUrl }}
+                </span>
+                <el-button type="primary" @click="getShareUrl">确认</el-button>
+            </div>
+        </el-dialog>
 
         <!--文件页-->
         <el-container>
@@ -87,6 +96,8 @@
                     </div>
                     <div style="text-align: left;">
                         <div style="margin-bottom: 12px;">
+
+                            <!--搜索框-->
                             <el-input @keyup.enter="search" v-model="InputSearch" class="searchInput" placeholder="搜索">
                                 <template #prefix>
                                     <el-icon slot="prefix">
@@ -102,7 +113,7 @@
                             <el-button v-for="(button, index) in buttons" :key="index" :type="button.types"
                                 @click="handleButtonClick(index)">
                                 <el-tooltip offset="17" class="box-item" effect="dark" hide-after="0"
-                                    :content="button.content" placement="bottom">
+                                    :content="button.content" placement="top">
                                     <el-icon class="el-icon--center">
                                         <img class="image-effect" style="width: 30px;" :src="button.cover">
                                     </el-icon>
@@ -163,16 +174,6 @@ import { ElMessage } from 'element-plus'
 import axios from 'axios'
 import { localServer, post } from '@/net'
 
-// interface Tree {
-//     label: string
-//     children?: Tree[]
-// }
-
-// const defaultProps = {
-//     children: 'children',
-//     label: 'label',
-// }
-
 const checkList = ref([])
 const title = ref("全部文件")
 const InputSearch = ref('')
@@ -207,7 +208,7 @@ const clearInput = (done) => {
 }
 const ShowDetailDialog = ref(false)
 const ShareDiglog = ref(false)
-
+const shareUrl = ref('')
 const refresh = ref(false)
 
 const search = () => {
@@ -233,89 +234,9 @@ const search = () => {
         })
     }, 200)
 }
-
 search()
 
-const beforeUpload = () => {
-    data.value.path = path.value
-}
-
-const videosrc = (filepath) => {
-    return localServer + '/file/download?path=' + filepath
-}
-
-/**按钮样式 */
-const buttons = ref([
-    { index: 1, types: "primary-4th", content:"返回", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/icons8-back-to-256.png" },
-    { index: 2, types: "primary-4th", content:"前进", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/icons8-next-page-256.png" },
-    { index: 3, types: "primary-3rd", content:"上传", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Upload.png" },
-    { index: 4, types: "primary-2nd", content:"下载", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Below.png" },
-    { index: 5, types: "primary-3rd", content:"删除", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Close.png" },
-    { index: 6, types: "primary-3rd", content:"重命名", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Edit.png" },
-    { index: 7, types: "primary-3rd", content:"分享", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Share.png" },
-    { index: 8, types: "primary-3rd", content:"新建文件夹", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Add%20Folder.png" },
-    { index: 9, types: "primary-3rd", content:"全选", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/icons8-ok-256.png" },
-])
-
-/**非文本文件预览 */
-const open = (filepath, filename) => {
-    if (filepath.endsWith('.png') || filepath.endsWith('.jpg') || filepath.endsWith('.jpeg') || filepath.endsWith('.gif')) {
-        currentName.value = filename
-        fileType.value = '.png'
-        URL.value = localServer + '/file/download?path=' + filepath
-        ShowDetailDialog.value = true
-    } else if (filepath.endsWith('.zip') || filepath.endsWith('.rar') || filepath.endsWith('.7z')) {
-        ElMessage.warning("无法在线预览压缩包，请下载查看")
-    } else if (filepath.endsWith('.mp4') || filepath.endsWith('.MP4')) {
-        fileType.value = '.mp4'
-        URL.value = localServer + '/file/download?path=' + filepath
-        ShowDetailDialog.value = true
-    } else if (filepath.endsWith('.mp3') || filepath.endsWith('.MP3')) {
-        fileType.value = '.mp3'
-        URL.value = localServer + '/file/getImage?owner=' + localStorage.getItem('id') + '&path=' + filepath
-        ShowDetailDialog.value = true
-    } else if (filepath.endsWith('.pdf')) {
-        window.open(localServer + '/file/getPDF?path=' + filepath)
-    } else if (filename.endsWith('/')) {
-        path.value = path.value + filename
-        search()
-    }
-}
-
-/**文本文件logo */
-const selectCover = (fileName, filePath) => {
-    if (fileName.endsWith('.conf')) {
-        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Documents.png'
-    } else if (fileName.endsWith('.zip') || fileName.endsWith('.rar') || fileName.endsWith('.7z') ||
-        fileName.endsWith('.tar') || fileName.endsWith('.gz') || fileName.endsWith('.bz2') ||
-        fileName.endsWith('.xz') || fileName.endsWith('.z')) {
-        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Archive%20Folder.png'
-    } else if (fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') ||
-        fileName.endsWith('.gif') || fileName.endsWith('.bmp')) {
-        return localServer + '/file/getImage?path=' + filePath
-    } else if (fileName.endsWith('.mp4') || fileName.endsWith('.MP4') || fileName.endsWith('.avi') || fileName.endsWith('.mkv') ||
-        fileName.endsWith('.flv') || fileName.endsWith('.mov') || fileName.endsWith('.mp3') ||
-        fileName.endsWith('.wav') || fileName.endsWith('.FLAC') || fileName.endsWith('.aac')) {
-        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/CircledPlay2.png'
-    } else if (fileName.endsWith('/')) {
-        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Folder2.png'
-    } else if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) {
-        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Microsoft%20Word%202019.png'
-    } else if (fileName.endsWith('.ppt') || fileName.endsWith('.pptx')) {
-        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Microsoft%20PowerPoint%202019.png'
-    } else if (fileName.endsWith('.key')) {
-        return ('https://f005.backblazeb2.com/file/img-forWeb/uPic/keynote.png')
-    } else if (fileName.endsWith('.numbers')) {
-        return ('https://f005.backblazeb2.com/file/img-forWeb/uPic/numbers.png')
-    } else if (fileName.endsWith('.xls') || fileName.endsWith('.xlsx')) {
-        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Microsoft%20Excel%202019.png'
-    } else if (fileName.endsWith('.pdf')) {
-        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/PDF.png'
-    } else {
-        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/File(3).png'
-    }
-}
-
+/**分页查询 */
 const changePage = (val) => {
     refresh.value = false
     currentPage.value = val
@@ -341,6 +262,100 @@ const changePage = (val) => {
     }, 200)
 }
 
+const beforeUpload = () => {
+    data.value.path = path.value
+}
+
+const getShareUrl = () => {
+    axios.post('/file/share', {
+        id: fileList.value[0].id,
+        filepath: fileList.value[0].filepath
+    })
+    .then(res => {
+        if (res.data) {
+            shareUrl.value = res.data
+        } else {
+            ElMessage.error("分享失败")
+        }
+    })
+}
+
+
+/**按钮样式 */
+const buttons = ref([
+    { index: 1, types: "primary-4th", content:"返回", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/icons8-back-to-256.png" },
+    { index: 2, types: "primary-3rd", content:"上传", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Upload.png" },
+    { index: 3, types: "primary-2nd", content:"下载", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Below.png" },
+    { index: 4, types: "primary-3rd", content:"删除", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Close.png" },
+    { index: 5, types: "primary-3rd", content:"重命名", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Edit.png" },
+    { index: 6, types: "primary-3rd", content:"分享", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Share.png" },
+    { index: 7, types: "primary-3rd", content:"新建文件夹", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/Add%20Folder.png" },
+    { index: 8, types: "primary-3rd", content:"全选", cover: "https://f005.backblazeb2.com/file/img-forWeb/uPic/icons8-ok-256.png" },
+])
+
+/**非文本文件预览 */
+const open = (filepath, filename) => {
+    if (filepath.endsWith('.png') || filepath.endsWith('.jpg') || filepath.endsWith('.jpeg') || filepath.endsWith('.gif')) {
+        currentName.value = filename
+        fileType.value = '.png'
+        URL.value = localServer + '/file/download?path=' + filepath
+        ShowDetailDialog.value = true
+    } else if (filepath.endsWith('.zip') || filepath.endsWith('.rar') || filepath.endsWith('.7z')) {
+        ElMessage.warning("无法在线预览压缩包，请下载查看")
+    } else if (filepath.endsWith('.mp4') || filepath.endsWith('.MP4')) {
+        currentName.value = filename
+        fileType.value = '.mp4'
+        URL.value = localServer + '/file/download?path=' + filepath
+        ShowDetailDialog.value = true
+    } else if (filepath.endsWith('.mp3') || filepath.endsWith('.MP3')) {
+        currentName.value = filename
+        fileType.value = '.mp3'
+        URL.value = localServer + '/file/getFile?owner=' + localStorage.getItem('id') + '&path=' + filepath
+        ShowDetailDialog.value = true
+    } else if (filepath.endsWith('.pdf')) {
+        window.open(localServer + '/file/getPDF?path=' + filepath)
+    } else if (filename.endsWith('/')) {
+        path.value = path.value + filename
+        search()
+    }
+}
+
+const videosrc = (filepath) => {
+    return localServer + '/file/download?path=' + filepath
+}
+/**文本文件logo */
+const selectCover = (fileName, filePath) => {
+    if (fileName.endsWith('.conf')) {
+        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Documents.png'
+    } else if (fileName.endsWith('.zip') || fileName.endsWith('.rar') || fileName.endsWith('.7z') ||
+        fileName.endsWith('.tar') || fileName.endsWith('.gz') || fileName.endsWith('.bz2') ||
+        fileName.endsWith('.xz') || fileName.endsWith('.z')) {
+        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Archive%20Folder.png'
+    } else if (fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') ||
+        fileName.endsWith('.gif') || fileName.endsWith('.bmp')) {
+        return localServer + '/file/getFile?path=' + filePath
+    } else if (fileName.endsWith('.mp4') || fileName.endsWith('.MP4') || fileName.endsWith('.avi') || fileName.endsWith('.mkv') ||
+        fileName.endsWith('.flv') || fileName.endsWith('.mov') || fileName.endsWith('.mp3') ||
+        fileName.endsWith('.wav') || fileName.endsWith('.FLAC') || fileName.endsWith('.aac')) {
+        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/CircledPlay2.png'
+    } else if (fileName.endsWith('/')) {
+        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Folder2.png'
+    } else if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) {
+        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Microsoft%20Word%202019.png'
+    } else if (fileName.endsWith('.ppt') || fileName.endsWith('.pptx')) {
+        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Microsoft%20PowerPoint%202019.png'
+    } else if (fileName.endsWith('.key')) {
+        return ('https://f005.backblazeb2.com/file/img-forWeb/uPic/keynote.png')
+    } else if (fileName.endsWith('.numbers')) {
+        return ('https://f005.backblazeb2.com/file/img-forWeb/uPic/numbers.png')
+    } else if (fileName.endsWith('.xls') || fileName.endsWith('.xlsx')) {
+        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/Microsoft%20Excel%202019.png'
+    } else if (fileName.endsWith('.pdf')) {
+        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/PDF.png'
+    } else {
+        return 'https://f005.backblazeb2.com/file/img-forWeb/uPic/File(3).png'
+    }
+}
 
 /**上传 */
 const onUploadSuccess = (response) => {
@@ -378,7 +393,7 @@ const rename = () => {
 const remove = () => {
     for (let i = 0; i < checkList.value.length; i++) {
         setTimeout(() => {
-            axios.get('/file/delete?id=' + fileList.value[checkList.value[i]].id)
+            axios.get('/file/remove?id=' + fileList.value[checkList.value[i]].id)
                 .then(res => {
                     if (res.data) {
                         if (i === checkList.value.length - 1) {
@@ -431,12 +446,17 @@ function wait(ms) {
 /**按钮事件绑定 */
 const handleButtonClick = (index) => {
     if (index === 0) {
-        
+        if (path.value === '/') {
+            ElMessage.warning('已经是根目录了')
+        } else {
+            path.value = path.value.substring(0, path.value.lastIndexOf("/", path.value.lastIndexOf("/") - 1) + 1)
+            search()
+        }
     } else if (index === 1) {
-        
-    } else if (index === 2) {
         UploadDialog.value = true
-    } else if (index === 3) {
+    } else if (index === 2) {
+
+        /**下载 */
         if (checkList.value.length === 0) {
             ElMessage.warning('请勾选需要下载的文件')
         } else {
@@ -446,13 +466,13 @@ const handleButtonClick = (index) => {
             }
             checkList.value = []
         } 
-    } else if (index === 4) {
+    } else if (index === 3) {
         if (checkList.value.length === 0) {
             ElMessage.warning('请勾选需要删除的文件')
         } else {
             RemoveDialog.value = true
         }
-    } else if (index === 5) {
+    } else if (index === 4) {
         if (checkList.value.length != 1) {
             ElMessage.warning('只能同时修改一个文件名')
         } else {
@@ -461,15 +481,15 @@ const handleButtonClick = (index) => {
             open(fileList.value[checkList.value[0]].filepath)
             ShowDetailDialog.value = false
         }
-    } else if (index === 6) {
-        if (checkList.value.length === 0) {
-            ElMessage.warning('请勾选需要分享的文件')
+    } else if (index === 5) {
+        if (checkList.value.length != 1) {
+            ElMessage.warning('只能同时分享一个文件')
         } else {
             ShareDiglog.value = true
         }
-    } else if (index == 7) {
+    } else if (index == 6) {
         FolderDialog.value = true
-    } else if (index == 8) {
+    } else if (index == 7) {
         if (checkList.value.length === fileList.value.length) {
             checkList.value = []
         } else if (checkList.value.length === 0) {
@@ -504,7 +524,7 @@ const handleButtonClick = (index) => {
     --el-input-border: #ffffff;
     --el-input-border-radius: 20px;
     height: 40px;
-    width: 366px;
+    width: 330px;
 }
 
 .primary {
