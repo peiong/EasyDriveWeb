@@ -11,7 +11,7 @@
         </el-dialog>
 
         <!--文件详情-->
-        <el-dialog v-model="ShowDetailDialog" title="新建文件夹" top="5vh" destroy-on-close>
+        <el-dialog v-model="ShowDetailDialog" title="文件详情" top="5vh" destroy-on-close>
             <div style="margin-bottom: 10px;">
                 <span>
                     {{ currentName }}
@@ -78,48 +78,38 @@
 
         <!--文件分享-->
         <el-dialog v-model="ShareDiglog" width="30%" title="分享文件" center>
-
             <div style="text-align: center; margin-bottom: 10px;">
                 <span>
                     {{ shareUrl }}
                 </span>
-                <el-button type="primary" @click="getShareUrl">确认</el-button>
             </div>
         </el-dialog>
 
         <!--文件页-->
         <el-container>
             <el-header>
-                <div>
-                    <div class="head-title">
+                <div style="color: rgb(100,100,100); text-align: left; margin-left: 5px;">
                         <h2>{{ title }}</h2>
-                    </div>
-                    <div style="text-align: left;">
-                        <div style="margin-bottom: 12px;">
-
-                            <!--搜索框-->
-                            <el-input @keyup.enter="search" v-model="InputSearch" class="searchInput" placeholder="搜索">
-                                <template #prefix>
-                                    <el-icon slot="prefix">
-                                        <img style="width: 23px; cursor: pointer;" @click="search"
-                                            src="https://f005.backblazeb2.com/file/img-forWeb/uPic/Search.png">
-                                    </el-icon>
-                                </template>
-                            </el-input>
-                        </div>
-
+                    <div style="margin-bottom: 12px;">
+                        <!--搜索框-->
+                        <el-input @keyup.enter="search" v-model="InputSearch" class="searchInput" placeholder="搜索">
+                            <template #prefix>
+                                <el-icon slot="prefix">
+                                    <img style="width: 23px; cursor: pointer;" @click="search"
+                                        src="https://f005.backblazeb2.com/file/img-forWeb/uPic/Search.png">
+                                </el-icon>
+                            </template>
+                        </el-input>
                         <!--顶部按钮-->
-                        <div>
-                            <el-button v-for="(button, index) in buttons" :key="index" :type="button.types"
-                                @click="handleButtonClick(index)">
-                                <el-tooltip offset="17" class="box-item" effect="dark" hide-after="0"
-                                    :content="button.content" placement="top">
-                                    <el-icon class="el-icon--center">
-                                        <img class="image-effect" style="width: 30px;" :src="button.cover">
-                                    </el-icon>
-                                </el-tooltip>
-                            </el-button>
-                        </div>
+                        <el-button v-for="(button, index) in buttons" :key="index" :type="button.types"
+                            @click="handleButtonClick(index)">
+                            <el-tooltip offset="17" class="box-item" effect="dark" hide-after="0" :content="button.content"
+                                placement="top">
+                                <el-icon class="el-icon--center">
+                                    <img class="image-effect" style="width: 30px;" :src="button.cover">
+                                </el-icon>
+                            </el-tooltip>
+                        </el-button>
                     </div>
                 </div>
             </el-header>
@@ -265,21 +255,6 @@ const changePage = (val) => {
 const beforeUpload = () => {
     data.value.path = path.value
 }
-
-const getShareUrl = () => {
-    axios.post('/file/share', {
-        id: fileList.value[0].id,
-        filepath: fileList.value[0].filepath
-    })
-    .then(res => {
-        if (res.data) {
-            shareUrl.value = res.data
-        } else {
-            ElMessage.error("分享失败")
-        }
-    })
-}
-
 
 /**按钮样式 */
 const buttons = ref([
@@ -482,10 +457,20 @@ const handleButtonClick = (index) => {
             ShowDetailDialog.value = false
         }
     } else if (index === 5) {
+
+        /**分享 */
         if (checkList.value.length != 1) {
             ElMessage.warning('只能同时分享一个文件')
         } else {
-            ShareDiglog.value = true
+            axios.get('/file/share?id=' + fileList.value[0].id)
+            .then(res => {
+                if (res.data!=='error') {
+                    shareUrl.value = localServer + '/file/getShare?id=' + res.data
+                } else {
+                    ElMessage.error("分享失败")
+                }
+                ShareDiglog.value = true
+            })
         }
     } else if (index == 6) {
         FolderDialog.value = true
@@ -524,7 +509,8 @@ const handleButtonClick = (index) => {
     --el-input-border: #ffffff;
     --el-input-border-radius: 20px;
     height: 40px;
-    width: 330px;
+    width: 250px;
+    margin-right: 10px;
 }
 
 .primary {

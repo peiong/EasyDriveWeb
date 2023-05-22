@@ -46,10 +46,10 @@ const size = ref(50)
 
 const items = ref([
   { id: 1, name: "全部文件", image: "https://api.iconify.design/ic:round-folder-open.svg", router: "/main/file" },
-  { id: 2, name: "正在上传", image: "https://api.iconify.design/ic:round-upload.svg", router: "/main/uploading" },
-  { id: 3, name: "重复文件", image: "https://api.iconify.design/ic:round-search.svg", router: "/main/scan" },
-  { id: 4, name: "回收站", image: "https://api.iconify.design/ic:round-delete.svg", router: "/main/recycle" },
-  { id: 5, name: "账号详情", image: "https://api.iconify.design/ic:round-person.svg", router: "/main/person" }
+  // { id: 2, name: "正在上传", image: "https://api.iconify.design/ic:round-upload.svg", router: "/main/uploading" },
+  { id: 2, name: "重复文件", image: "https://api.iconify.design/ic:round-search.svg", router: "/main/scan" },
+  { id: 3, name: "回收站", image: "https://api.iconify.design/ic:round-delete.svg", router: "/main/recycle" },
+  { id: 4, name: "账号详情", image: "https://api.iconify.design/ic:round-person.svg", router: "/main/person" }
 ])
 
 const onClick = (path) => {

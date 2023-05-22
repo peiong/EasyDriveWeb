@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-container>
-            <el-header style="border-bottom: 1px solid rgb(230, 230, 230);">
+            <el-header>
                 <div style="color: rgb(100,100,100); text-align: left; height: 109px;">
                     <h2>{{ title }}</h2>
                     <el-button type="primary" @click="scan">清空</el-button>
@@ -25,6 +25,7 @@ const title = ref('正在上传')
 <style scoped>
 .el-header {
     height: 100%;
+    border-bottom: 1px solid rgb(230, 230, 230);
 }
 
 .el-button--primary {
