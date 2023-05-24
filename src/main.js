@@ -6,8 +6,8 @@ import axios from 'axios'
 
 axios.defaults.withCredentials = true
 
-axios.defaults.baseURL = 'http://192.168.1.105:8080'
-//axios.defaults.baseURL = 'https://peirong.co:8443/EasyDrive'
+//axios.defaults.baseURL = 'http://192.168.1.105:8080'
+axios.defaults.baseURL = 'https://peirong.co:8443/EasyDrive'
 
 const app = createApp(App)
 app.use(router)

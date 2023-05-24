@@ -19,7 +19,6 @@
                     </el-dialog>
                 </div>
 
-
                 <el-tooltip class="box-item" effect="dark" hide-after="0" content="更换头像" placement="right">
                     <el-avatar :size="75" :src="getAvatarUrl()" class="user-avatar" @click="dialogAvatar = true" />
                 </el-tooltip>
@@ -110,7 +109,7 @@
                         </div>
                         <template #footer>
                             <span class="dialog-footer">
-                                <el-button @click="dialogPassword = false">取消</el-button>
+                                <el-button type="cancel-button" @click="dialogPassword = false">取消</el-button>
                                 <el-button type="primary" @click="UpdatePassword">修改</el-button>
                             </span>
                         </template>
@@ -368,11 +367,6 @@ a:hover {
     text-decoration: underline;
 }
 
-.el-button--primary {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    border-radius: 16px;
-}
 
 .el-button--danger {
     font-size: 14px;

@@ -132,20 +132,6 @@ const remove = () => {
     RemoveDialog.value = false
 }
 
-const handleButtonClick = (index) => {
-    if (index === 0) {
-        //scan()
-    } else if (index === 1) {
-        RemoveDialog.value = true
-    } else if (index === 2) {
-        checkList.value = []
-        for (let i = 0; i < fileList.value.length; i++) {
-            checkList.value.push(i)
-        }
-    }
-
-}
-
 /**非文本文件预览 */
 const open = (filepath, filename) => {
     if (filepath.endsWith('.png') || filepath.endsWith('.jpg') || filepath.endsWith('.jpeg') || filepath.endsWith('.gif')) {

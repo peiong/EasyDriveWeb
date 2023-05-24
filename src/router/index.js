@@ -71,8 +71,7 @@ router.beforeEach((to, from, next) => {
             }
         })
         .catch(err => {
-            // ElMessage.error("404，页面未找到")
-            next('/error')
+            ElMessage.error("服务器断开连接，请联系管理员")
         })
 
 })

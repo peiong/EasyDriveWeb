@@ -53,10 +53,10 @@
                 </div>
             </el-header>
             <el-main>
-                <div style="text-align: left; margin-left: 5px;">
                     <el-collapse-transition>
                         <div v-show="refresh">
-                            <el-checkbox-group v-model="checkList">
+                            <el-checkbox-group v-model="checkList">           
+                                <!--卡片展示-->
                                 <el-card v-for="(item, index) in fileList" :key="index" :span="3"
                                     :body-style="{ padding: '10px' }">
                                     <el-checkbox :label="index"
@@ -85,8 +85,6 @@
                             </el-checkbox-group>
                         </div>
                     </el-collapse-transition>
-                </div>
-
             </el-main>
         </el-container>
     </div>
@@ -124,7 +122,7 @@ const search = () => {
 search()
 
 const videosrc = (filepath) => {
-    return localServer + '/file/download?path=' + filepath
+    return localServer + '/file/show?path=' + filepath
 }
 
 const selectCover = (fileName, filePath) => {
@@ -164,14 +162,14 @@ const open = (filepath, filename) => {
     if (filepath.endsWith('.png') || filepath.endsWith('.jpg') || filepath.endsWith('.jpeg') || filepath.endsWith('.gif')) {
         currentName.value = filename
         fileType.value = '.png'
-        URL.value = localServer + '/file/download?path=' + filepath
+        URL.value = localServer + '/file/show?path=' + filepath
         ShowDetailDialog.value = true
     } else if (filepath.endsWith('.zip') || filepath.endsWith('.rar') || filepath.endsWith('.7z')) {
         ElMessage.warning("无法在线预览压缩包，请下载查看")
     } else if (filepath.endsWith('.mp4') || filepath.endsWith('.MP4')) {
         currentName.value = filename
         fileType.value = '.mp4'
-        URL.value = localServer + '/file/download?path=' + filepath
+        URL.value = localServer + '/file/show?path=' + filepath
         ShowDetailDialog.value = true
     } else if (filepath.endsWith('.mp3') || filepath.endsWith('.MP3')) {
         currentName.value = filename

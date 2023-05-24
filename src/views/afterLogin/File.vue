@@ -62,7 +62,7 @@
         </el-dialog>
 
         <!--新建文件夹对话框-->
-        <el-dialog v-model="FolderDialog" title="新建文件夹" width="40%" center>
+        <el-dialog v-model="FolderDialog" title="新建文件夹" width="30%" center>
             <div style="text-align: center; margin-bottom: 10px;">
                 <span>
                     <el-input v-model="folderName" style="width: 350px;" placeholder="请输入文件夹名称：（名称不能包含 '/' ）" />
@@ -117,6 +117,7 @@
                 <el-collapse-transition>
                     <div v-show="refresh">
                         <el-checkbox-group v-model="checkList">
+                            <!--文件卡片-->
                             <el-card v-for="(item, index) in fileList" :key="index" :span="3"
                                 :body-style="{ padding: '10px' }">
                                 <el-checkbox :label="index"
