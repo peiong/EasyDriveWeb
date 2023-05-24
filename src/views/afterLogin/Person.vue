@@ -344,6 +344,10 @@ const UpdateUsename = () => {
     margin-bottom: 5px;
 }
 
+.el-button--primary {
+    border-radius: 15px;
+}
+
 .dialog-input {
     width: 355px;
     height: 40px;
