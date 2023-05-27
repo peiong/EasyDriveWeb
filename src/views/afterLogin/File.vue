@@ -10,6 +10,7 @@
             </el-upload>
         </el-dialog>
 
+
         <!--文件详情-->
         <el-dialog v-model="ShowDetailDialog" title="文件详情" top="5vh" destroy-on-close>
             <div style="margin-bottom: 10px;">
